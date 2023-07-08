@@ -1,9 +1,9 @@
 /*
 * Shards Vue v1.0.7 (https://designrevision.com/downloads/shards-vue/)
-* Based on: Bootstrap ^4.4.1 (https://getbootstrap.com)
-* Based on: Shards ^3.0.0 (https://designrevision.com/downloads/shards/)
-* Copyright 2017-2021 DesignRevision (https://designrevision.com)
-* Copyright 2017-2021 Catalin Vasile (http://catalin.me)
+* Based on: Bootstrap 4.4.1 (https://getbootstrap.com)
+* Based on: Shards 3.0.0 (https://designrevision.com/downloads/shards/)
+* Copyright 2017-2023 DesignRevision (https://designrevision.com)
+* Copyright 2017-2023 Catalin Vasile (http://catalin.me)
 */
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('vuejs-datepicker'), require('vue-clickaway'), require('nouislider')) :
@@ -497,94 +497,9 @@
         }
     };
 
-    function normalizeComponent(template, style, script, scopeId, isFunctionalTemplate, moduleIdentifier
-    /* server only */
-    , shadowMode, createInjector, createInjectorSSR, createInjectorShadow) {
-      if (typeof shadowMode !== 'boolean') {
-        createInjectorSSR = createInjector;
-        createInjector = shadowMode;
-        shadowMode = false;
-      } // Vue.extend constructor export interop.
-
-
-      var options = typeof script === 'function' ? script.options : script; // render functions
-
-      if (template && template.render) {
-        options.render = template.render;
-        options.staticRenderFns = template.staticRenderFns;
-        options._compiled = true; // functional template
-
-        if (isFunctionalTemplate) {
-          options.functional = true;
-        }
-      } // scopedId
-
-
-      if (scopeId) {
-        options._scopeId = scopeId;
-      }
-
-      var hook;
-
-      if (moduleIdentifier) {
-        // server build
-        hook = function hook(context) {
-          // 2.3 injection
-          context = context || // cached call
-          this.$vnode && this.$vnode.ssrContext || // stateful
-          this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext; // functional
-          // 2.2 with runInNewContext: true
-
-          if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-            context = __VUE_SSR_CONTEXT__;
-          } // inject component styles
-
-
-          if (style) {
-            style.call(this, createInjectorSSR(context));
-          } // register component module identifier for async chunk inference
-
-
-          if (context && context._registeredComponents) {
-            context._registeredComponents.add(moduleIdentifier);
-          }
-        }; // used by ssr in case component is cached and beforeCreate
-        // never gets called
-
-
-        options._ssrRegister = hook;
-      } else if (style) {
-        hook = shadowMode ? function () {
-          style.call(this, createInjectorShadow(this.$root.$options.shadowRoot));
-        } : function (context) {
-          style.call(this, createInjector(context));
-        };
-      }
-
-      if (hook) {
-        if (options.functional) {
-          // register for functional component in vue file
-          var originalRender = options.render;
-
-          options.render = function renderWithStyleInjection(h, context) {
-            hook.call(context);
-            return originalRender(h, context);
-          };
-        } else {
-          // inject component registration as beforeCreate hook
-          var existing = options.beforeCreate;
-          options.beforeCreate = existing ? [].concat(existing, hook) : [hook];
-        }
-      }
-
-      return script;
-    }
-
-    var normalizeComponent_1 = normalizeComponent;
-
     /* script */
-    var __vue_script__ = script;
-
+                var __vue_script__ = script;
+                
     /* template */
     var __vue_render__ = function() {
       var _vm = this;
@@ -612,13 +527,36 @@
       var __vue_module_identifier__ = undefined;
       /* functional template */
       var __vue_is_functional_template__ = false;
+      /* component normalizer */
+      function __vue_normalize__(
+        template, style, script$$1,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script$$1 === 'function' ? script$$1.options : script$$1) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/button/ButtonClose.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dBtnClose = normalizeComponent_1(
+      var dBtnClose = __vue_normalize__(
         { render: __vue_render__, staticRenderFns: __vue_staticRenderFns__ },
         __vue_inject_styles__,
         __vue_script__,
@@ -760,59 +698,9 @@
         }
     };
 
-    var isOldIE = typeof navigator !== 'undefined' && /msie [6-9]\\b/.test(navigator.userAgent.toLowerCase());
-    function createInjector(context) {
-      return function (id, style) {
-        return addStyle(id, style);
-      };
-    }
-    var HEAD = document.head || document.getElementsByTagName('head')[0];
-    var styles = {};
-
-    function addStyle(id, css) {
-      var group = isOldIE ? css.media || 'default' : id;
-      var style = styles[group] || (styles[group] = {
-        ids: new Set(),
-        styles: []
-      });
-
-      if (!style.ids.has(id)) {
-        style.ids.add(id);
-        var code = css.source;
-
-        if (css.map) {
-          // https://developer.chrome.com/devtools/docs/javascript-debugging
-          // this makes source maps inside style tags work properly in Chrome
-          code += '\n/*# sourceURL=' + css.map.sources[0] + ' */'; // http://stackoverflow.com/a/26603875
-
-          code += '\n/*# sourceMappingURL=data:application/json;base64,' + btoa(unescape(encodeURIComponent(JSON.stringify(css.map)))) + ' */';
-        }
-
-        if (!style.element) {
-          style.element = document.createElement('style');
-          style.element.type = 'text/css';
-          if (css.media) { style.element.setAttribute('media', css.media); }
-          HEAD.appendChild(style.element);
-        }
-
-        if ('styleSheet' in style.element) {
-          style.styles.push(code);
-          style.element.styleSheet.cssText = style.styles.filter(Boolean).join('\n');
-        } else {
-          var index = style.ids.size - 1;
-          var textNode = document.createTextNode(code);
-          var nodes = style.element.childNodes;
-          if (nodes[index]) { style.element.removeChild(nodes[index]); }
-          if (nodes.length) { style.element.insertBefore(textNode, nodes[index]); }else { style.element.appendChild(textNode); }
-        }
-      }
-    }
-
-    var browser = createInjector;
-
     /* script */
-    var __vue_script__$1 = script$1;
-
+                var __vue_script__$1 = script$1;
+                
     /* template */
     var __vue_render__$1 = function() {
       var _vm = this;
@@ -858,18 +746,122 @@
       var __vue_module_identifier__$1 = undefined;
       /* functional template */
       var __vue_is_functional_template__$1 = false;
+      /* component normalizer */
+      function __vue_normalize__$1(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/alert/Alert.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        {
+          var hook;
+          if (style) {
+            hook = function(context) {
+              style.call(this, createInjector(context));
+            };
+          }
+
+          if (hook !== undefined) {
+            if (component.functional) {
+              // register for functional component in vue file
+              var originalRender = component.render;
+              component.render = function renderWithStyleInjection(h, context) {
+                hook.call(context);
+                return originalRender(h, context)
+              };
+            } else {
+              // inject component registration as beforeCreate hook
+              var existing = component.beforeCreate;
+              component.beforeCreate = existing ? [].concat(existing, hook) : [hook];
+            }
+          }
+        }
+
+        return component
+      }
+      /* style inject */
+      function __vue_create_injector__() {
+        var head = document.head || document.getElementsByTagName('head')[0];
+        var styles = __vue_create_injector__.styles || (__vue_create_injector__.styles = {});
+        var isOldIE =
+          typeof navigator !== 'undefined' &&
+          /msie [6-9]\\b/.test(navigator.userAgent.toLowerCase());
+
+        return function addStyle(id, css) {
+          if (document.querySelector('style[data-vue-ssr-id~="' + id + '"]')) { return } // SSR styles are present.
+
+          var group = isOldIE ? css.media || 'default' : id;
+          var style = styles[group] || (styles[group] = { ids: [], parts: [], element: undefined });
+
+          if (!style.ids.includes(id)) {
+            var code = css.source;
+            var index = style.ids.length;
+
+            style.ids.push(id);
+
+            if (isOldIE) {
+              style.element = style.element || document.querySelector('style[data-group=' + group + ']');
+            }
+
+            if (!style.element) {
+              var el = style.element = document.createElement('style');
+              el.type = 'text/css';
+
+              if (css.media) { el.setAttribute('media', css.media); }
+              if (isOldIE) {
+                el.setAttribute('data-group', group);
+                el.setAttribute('data-next-index', '0');
+              }
+
+              head.appendChild(el);
+            }
+
+            if (isOldIE) {
+              index = parseInt(style.element.getAttribute('data-next-index'));
+              style.element.setAttribute('data-next-index', index + 1);
+            }
+
+            if (style.element.styleSheet) {
+              style.parts.push(code);
+              style.element.styleSheet.cssText = style.parts
+                .filter(Boolean)
+                .join('\n');
+            } else {
+              var textNode = document.createTextNode(code);
+              var nodes = style.element.childNodes;
+              if (nodes[index]) { style.element.removeChild(nodes[index]); }
+              if (nodes.length) { style.element.insertBefore(textNode, nodes[index]); }
+              else { style.element.appendChild(textNode); }
+            }
+          }
+        }
+      }
       /* style inject SSR */
       
 
       
-      var dAlert = normalizeComponent_1(
+      var dAlert = __vue_normalize__$1(
         { render: __vue_render__$1, staticRenderFns: __vue_staticRenderFns__$1 },
         __vue_inject_styles__$1,
         __vue_script__$1,
         __vue_scope_id__$1,
         __vue_is_functional_template__$1,
         __vue_module_identifier__$1,
-        browser,
+        __vue_create_injector__,
         undefined
       );
 
@@ -1060,8 +1052,8 @@
     };
 
     /* script */
-    var __vue_script__$2 = script$2;
-
+                var __vue_script__$2 = script$2;
+                
     /* template */
     var __vue_render__$2 = function() {
       var _vm = this;
@@ -1109,13 +1101,36 @@
       var __vue_module_identifier__$2 = undefined;
       /* functional template */
       var __vue_is_functional_template__$2 = false;
+      /* component normalizer */
+      function __vue_normalize__$2(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/link/Link.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dLink = normalizeComponent_1(
+      var dLink = __vue_normalize__$2(
         { render: __vue_render__$2, staticRenderFns: __vue_staticRenderFns__$2 },
         __vue_inject_styles__$2,
         __vue_script__$2,
@@ -1225,8 +1240,8 @@
     };
 
     /* script */
-    var __vue_script__$3 = script$3;
-
+                var __vue_script__$3 = script$3;
+                
     /* template */
     var __vue_render__$3 = function() {
       var _vm = this;
@@ -1258,13 +1273,36 @@
       var __vue_module_identifier__$3 = undefined;
       /* functional template */
       var __vue_is_functional_template__$3 = false;
+      /* component normalizer */
+      function __vue_normalize__$3(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/badge/Badge.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dBadge = normalizeComponent_1(
+      var dBadge = __vue_normalize__$3(
         { render: __vue_render__$3, staticRenderFns: __vue_staticRenderFns__$3 },
         __vue_inject_styles__$3,
         __vue_script__$3,
@@ -1330,8 +1368,8 @@
     };
 
     /* script */
-    var __vue_script__$4 = script$4;
-
+                var __vue_script__$4 = script$4;
+                
     /* template */
     var __vue_render__$4 = function() {
       var _vm = this;
@@ -1354,13 +1392,36 @@
       var __vue_module_identifier__$4 = undefined;
       /* functional template */
       var __vue_is_functional_template__$4 = false;
+      /* component normalizer */
+      function __vue_normalize__$4(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/breadcrumb/BreadcrumbLink.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var BreadcrumbLink = normalizeComponent_1(
+      var BreadcrumbLink = __vue_normalize__$4(
         { render: __vue_render__$4, staticRenderFns: __vue_staticRenderFns__$4 },
         __vue_inject_styles__$4,
         __vue_script__$4,
@@ -1404,8 +1465,8 @@
     };
 
     /* script */
-    var __vue_script__$5 = script$5;
-
+                var __vue_script__$5 = script$5;
+                
     /* template */
     var __vue_render__$5 = function() {
       var _vm = this;
@@ -1438,13 +1499,36 @@
       var __vue_module_identifier__$5 = undefined;
       /* functional template */
       var __vue_is_functional_template__$5 = false;
+      /* component normalizer */
+      function __vue_normalize__$5(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/breadcrumb/BreadcrumbItem.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var BreadcrumbItem = normalizeComponent_1(
+      var BreadcrumbItem = __vue_normalize__$5(
         { render: __vue_render__$5, staticRenderFns: __vue_staticRenderFns__$5 },
         __vue_inject_styles__$5,
         __vue_script__$5,
@@ -1501,8 +1585,8 @@
     };
 
     /* script */
-    var __vue_script__$6 = script$6;
-
+                var __vue_script__$6 = script$6;
+                
     /* template */
     var __vue_render__$6 = function() {
       var _vm = this;
@@ -1535,13 +1619,36 @@
       var __vue_module_identifier__$6 = undefined;
       /* functional template */
       var __vue_is_functional_template__$6 = false;
+      /* component normalizer */
+      function __vue_normalize__$6(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/breadcrumb/Breadcrumb.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dBreadcrumb = normalizeComponent_1(
+      var dBreadcrumb = __vue_normalize__$6(
         { render: __vue_render__$6, staticRenderFns: __vue_staticRenderFns__$6 },
         __vue_inject_styles__$6,
         __vue_script__$6,
@@ -1657,8 +1764,8 @@
     };
 
     /* script */
-    var __vue_script__$7 = script$7;
-
+                var __vue_script__$7 = script$7;
+                
     /* template */
     var __vue_render__$7 = function() {
       var _vm = this;
@@ -1694,13 +1801,36 @@
       var __vue_module_identifier__$7 = undefined;
       /* functional template */
       var __vue_is_functional_template__$7 = false;
+      /* component normalizer */
+      function __vue_normalize__$7(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/button/Button.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dButton = normalizeComponent_1(
+      var dButton = __vue_normalize__$7(
         { render: __vue_render__$7, staticRenderFns: __vue_staticRenderFns__$7 },
         __vue_inject_styles__$7,
         __vue_script__$7,
@@ -1785,8 +1915,8 @@
     };
 
     /* script */
-    var __vue_script__$8 = script$8;
-
+                var __vue_script__$8 = script$8;
+                
     /* template */
     var __vue_render__$8 = function() {
       var _vm = this;
@@ -1811,7 +1941,7 @@
       /* style */
       var __vue_inject_styles__$8 = function (inject) {
         if (!inject) { return }
-        inject("data-v-10262502_0", { source: ".btn-group-vertical .btn + .btn[data-v-10262502] {\n  margin-left: 0 !important;\n}\n\n/*# sourceMappingURL=ButtonGroup.vue.map */", map: {"version":3,"sources":["/Users/dziudek/Desktop/Github/shards-vue/src/components/button-group/ButtonGroup.vue","ButtonGroup.vue"],"names":[],"mappings":"AA6DA;EACA,yBAAA;AAAA;;AC3DA,0CAA0C","file":"ButtonGroup.vue","sourcesContent":["<template>\n    <div :class=\"[\n            btnGroupSizeClass,\n            vertical ? 'btn-group-vertical' : 'btn-group'\n        ]\"\n        :aria-role=\"ariaRole\"\n        :aria-label=\"ariaLabel\">\n        <slot />\n    </div>\n</template>\n\n<script>\nexport default {\n    name: 'd-button-group',\n    props: {\n        /**\n         * Whether it is a vertical button group, or not.\n         */\n        vertical: {\n            type: Boolean,\n            default: false\n        },\n        /**\n         * The button group size.\n         */\n        size: {\n            type: String,\n            validator: v => ['small', 'large', null].includes(v),\n            default: null\n        },\n        /**\n         * The button group's aria role.\n         */\n        ariaRole: {\n            type: String,\n            default: 'group'\n        },\n        /**\n         * The button group's aria label.\n         */\n        ariaLabel: {\n            type: String,\n            default: 'Button group'\n        }\n    },\n    computed: {\n        btnGroupSizeClass() {\n            const buttonGroupSizes = { small: 'sm', large: 'lg' };\n\n            if (this.size !== '') {\n                return `btn-group-${buttonGroupSizes[this.size]}`;\n            }\n\n            return this.size;\n        }\n    }\n}\n</script>\n\n<style lang=\"scss\" scoped>\n    // TODO: This should be fixed in Shards.\n    .btn-group-vertical .btn + .btn {\n        margin-left: 0 !important;\n    }\n</style>\n\n",".btn-group-vertical .btn + .btn {\n  margin-left: 0 !important; }\n\n/*# sourceMappingURL=ButtonGroup.vue.map */"]}, media: undefined });
+        inject("data-v-10262502_0", { source: ".btn-group-vertical .btn + .btn[data-v-10262502] {\n  margin-left: 0 !important;\n}\n\n/*# sourceMappingURL=ButtonGroup.vue.map */", map: {"version":3,"sources":["/Users/dziudek/Desktop/Github/shards-vue/src/components/button-group/ButtonGroup.vue","ButtonGroup.vue"],"names":[],"mappings":"AA6DA;EACA,yBAAA;AC5DA;;AAEA,0CAA0C","file":"ButtonGroup.vue","sourcesContent":["<template>\n    <div :class=\"[\n            btnGroupSizeClass,\n            vertical ? 'btn-group-vertical' : 'btn-group'\n        ]\"\n        :aria-role=\"ariaRole\"\n        :aria-label=\"ariaLabel\">\n        <slot />\n    </div>\n</template>\n\n<script>\nexport default {\n    name: 'd-button-group',\n    props: {\n        /**\n         * Whether it is a vertical button group, or not.\n         */\n        vertical: {\n            type: Boolean,\n            default: false\n        },\n        /**\n         * The button group size.\n         */\n        size: {\n            type: String,\n            validator: v => ['small', 'large', null].includes(v),\n            default: null\n        },\n        /**\n         * The button group's aria role.\n         */\n        ariaRole: {\n            type: String,\n            default: 'group'\n        },\n        /**\n         * The button group's aria label.\n         */\n        ariaLabel: {\n            type: String,\n            default: 'Button group'\n        }\n    },\n    computed: {\n        btnGroupSizeClass() {\n            const buttonGroupSizes = { small: 'sm', large: 'lg' };\n\n            if (this.size !== '') {\n                return `btn-group-${buttonGroupSizes[this.size]}`;\n            }\n\n            return this.size;\n        }\n    }\n}\n</script>\n\n<style lang=\"scss\" scoped>\n    // TODO: This should be fixed in Shards.\n    .btn-group-vertical .btn + .btn {\n        margin-left: 0 !important;\n    }\n</style>\n\n",".btn-group-vertical .btn + .btn {\n  margin-left: 0 !important;\n}\n\n/*# sourceMappingURL=ButtonGroup.vue.map */"]}, media: undefined });
 
       };
       /* scoped */
@@ -1820,18 +1950,122 @@
       var __vue_module_identifier__$8 = undefined;
       /* functional template */
       var __vue_is_functional_template__$8 = false;
+      /* component normalizer */
+      function __vue_normalize__$8(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/button-group/ButtonGroup.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        {
+          var hook;
+          if (style) {
+            hook = function(context) {
+              style.call(this, createInjector(context));
+            };
+          }
+
+          if (hook !== undefined) {
+            if (component.functional) {
+              // register for functional component in vue file
+              var originalRender = component.render;
+              component.render = function renderWithStyleInjection(h, context) {
+                hook.call(context);
+                return originalRender(h, context)
+              };
+            } else {
+              // inject component registration as beforeCreate hook
+              var existing = component.beforeCreate;
+              component.beforeCreate = existing ? [].concat(existing, hook) : [hook];
+            }
+          }
+        }
+
+        return component
+      }
+      /* style inject */
+      function __vue_create_injector__$1() {
+        var head = document.head || document.getElementsByTagName('head')[0];
+        var styles = __vue_create_injector__$1.styles || (__vue_create_injector__$1.styles = {});
+        var isOldIE =
+          typeof navigator !== 'undefined' &&
+          /msie [6-9]\\b/.test(navigator.userAgent.toLowerCase());
+
+        return function addStyle(id, css) {
+          if (document.querySelector('style[data-vue-ssr-id~="' + id + '"]')) { return } // SSR styles are present.
+
+          var group = isOldIE ? css.media || 'default' : id;
+          var style = styles[group] || (styles[group] = { ids: [], parts: [], element: undefined });
+
+          if (!style.ids.includes(id)) {
+            var code = css.source;
+            var index = style.ids.length;
+
+            style.ids.push(id);
+
+            if (isOldIE) {
+              style.element = style.element || document.querySelector('style[data-group=' + group + ']');
+            }
+
+            if (!style.element) {
+              var el = style.element = document.createElement('style');
+              el.type = 'text/css';
+
+              if (css.media) { el.setAttribute('media', css.media); }
+              if (isOldIE) {
+                el.setAttribute('data-group', group);
+                el.setAttribute('data-next-index', '0');
+              }
+
+              head.appendChild(el);
+            }
+
+            if (isOldIE) {
+              index = parseInt(style.element.getAttribute('data-next-index'));
+              style.element.setAttribute('data-next-index', index + 1);
+            }
+
+            if (style.element.styleSheet) {
+              style.parts.push(code);
+              style.element.styleSheet.cssText = style.parts
+                .filter(Boolean)
+                .join('\n');
+            } else {
+              var textNode = document.createTextNode(code);
+              var nodes = style.element.childNodes;
+              if (nodes[index]) { style.element.removeChild(nodes[index]); }
+              if (nodes.length) { style.element.insertBefore(textNode, nodes[index]); }
+              else { style.element.appendChild(textNode); }
+            }
+          }
+        }
+      }
       /* style inject SSR */
       
 
       
-      var dButtonGroup = normalizeComponent_1(
+      var dButtonGroup = __vue_normalize__$8(
         { render: __vue_render__$8, staticRenderFns: __vue_staticRenderFns__$8 },
         __vue_inject_styles__$8,
         __vue_script__$8,
         __vue_scope_id__$8,
         __vue_is_functional_template__$8,
         __vue_module_identifier__$8,
-        browser,
+        __vue_create_injector__$1,
         undefined
       );
 
@@ -1878,8 +2112,8 @@
     };
 
     /* script */
-    var __vue_script__$9 = script$9;
-
+                var __vue_script__$9 = script$9;
+                
     /* template */
     var __vue_render__$9 = function() {
       var _vm = this;
@@ -1906,13 +2140,36 @@
       var __vue_module_identifier__$9 = undefined;
       /* functional template */
       var __vue_is_functional_template__$9 = false;
+      /* component normalizer */
+      function __vue_normalize__$9(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/button-toolbar/ButtonToolbar.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dButtonToolbar = normalizeComponent_1(
+      var dButtonToolbar = __vue_normalize__$9(
         { render: __vue_render__$9, staticRenderFns: __vue_staticRenderFns__$9 },
         __vue_inject_styles__$9,
         __vue_script__$9,
@@ -1994,8 +2251,8 @@
     };
 
     /* script */
-    var __vue_script__$a = script$a;
-
+                var __vue_script__$a = script$a;
+                
     /* template */
     var __vue_render__$a = function() {
       var _vm = this;
@@ -2036,13 +2293,36 @@
       var __vue_module_identifier__$a = undefined;
       /* functional template */
       var __vue_is_functional_template__$a = false;
+      /* component normalizer */
+      function __vue_normalize__$a(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/card/Card.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dCard = normalizeComponent_1(
+      var dCard = __vue_normalize__$a(
         { render: __vue_render__$a, staticRenderFns: __vue_staticRenderFns__$a },
         __vue_inject_styles__$a,
         __vue_script__$a,
@@ -2146,8 +2426,8 @@
     };
 
     /* script */
-    var __vue_script__$b = script$b;
-
+                var __vue_script__$b = script$b;
+                
     /* template */
     var __vue_render__$b = function() {
       var _vm = this;
@@ -2199,13 +2479,36 @@
       var __vue_module_identifier__$b = undefined;
       /* functional template */
       var __vue_is_functional_template__$b = false;
+      /* component normalizer */
+      function __vue_normalize__$b(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/card/CardBody.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dCardBody = normalizeComponent_1(
+      var dCardBody = __vue_normalize__$b(
         { render: __vue_render__$b, staticRenderFns: __vue_staticRenderFns__$b },
         __vue_inject_styles__$b,
         __vue_script__$b,
@@ -2278,8 +2581,8 @@
     };
 
     /* script */
-    var __vue_script__$c = script$c;
-
+                var __vue_script__$c = script$c;
+                
     /* template */
     var __vue_render__$c = function() {
       var _vm = this;
@@ -2312,13 +2615,36 @@
       var __vue_module_identifier__$c = undefined;
       /* functional template */
       var __vue_is_functional_template__$c = false;
+      /* component normalizer */
+      function __vue_normalize__$c(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/card/CardFooter.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dCardFooter = normalizeComponent_1(
+      var dCardFooter = __vue_normalize__$c(
         { render: __vue_render__$c, staticRenderFns: __vue_staticRenderFns__$c },
         __vue_inject_styles__$c,
         __vue_script__$c,
@@ -2377,8 +2703,8 @@
     };
 
     /* script */
-    var __vue_script__$d = script$d;
-
+                var __vue_script__$d = script$d;
+                
     /* template */
     var __vue_render__$d = function() {
       var _vm = this;
@@ -2402,13 +2728,36 @@
       var __vue_module_identifier__$d = undefined;
       /* functional template */
       var __vue_is_functional_template__$d = false;
+      /* component normalizer */
+      function __vue_normalize__$d(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/card/CardGroup.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dCardGroup = normalizeComponent_1(
+      var dCardGroup = __vue_normalize__$d(
         { render: __vue_render__$d, staticRenderFns: __vue_staticRenderFns__$d },
         __vue_inject_styles__$d,
         __vue_script__$d,
@@ -2481,8 +2830,8 @@
     };
 
     /* script */
-    var __vue_script__$e = script$e;
-
+                var __vue_script__$e = script$e;
+                
     /* template */
     var __vue_render__$e = function() {
       var _vm = this;
@@ -2515,13 +2864,36 @@
       var __vue_module_identifier__$e = undefined;
       /* functional template */
       var __vue_is_functional_template__$e = false;
+      /* component normalizer */
+      function __vue_normalize__$e(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/card/CardHeader.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dCardHeader = normalizeComponent_1(
+      var dCardHeader = __vue_normalize__$e(
         { render: __vue_render__$e, staticRenderFns: __vue_staticRenderFns__$e },
         __vue_inject_styles__$e,
         __vue_script__$e,
@@ -2597,8 +2969,8 @@
     };
 
     /* script */
-    var __vue_script__$f = script$f;
-
+                var __vue_script__$f = script$f;
+                
     /* template */
     var __vue_render__$f = function() {
       var _vm = this;
@@ -2620,13 +2992,36 @@
       var __vue_module_identifier__$f = undefined;
       /* functional template */
       var __vue_is_functional_template__$f = false;
+      /* component normalizer */
+      function __vue_normalize__$f(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/card/CardImg.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dCardImg = normalizeComponent_1(
+      var dCardImg = __vue_normalize__$f(
         { render: __vue_render__$f, staticRenderFns: __vue_staticRenderFns__$f },
         __vue_inject_styles__$f,
         __vue_script__$f,
@@ -2840,8 +3235,8 @@
     };
 
     /* script */
-    var __vue_script__$g = script$g;
-
+                var __vue_script__$g = script$g;
+                
     /* template */
     var __vue_render__$g = function() {
       var _vm = this;
@@ -2897,13 +3292,36 @@
       var __vue_module_identifier__$g = undefined;
       /* functional template */
       var __vue_is_functional_template__$g = false;
+      /* component normalizer */
+      function __vue_normalize__$g(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/collapse/Collapse.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dCollapse = normalizeComponent_1(
+      var dCollapse = __vue_normalize__$g(
         { render: __vue_render__$g, staticRenderFns: __vue_staticRenderFns__$g },
         __vue_inject_styles__$g,
         __vue_script__$g,
@@ -2957,8 +3375,8 @@
     };
 
     /* script */
-    var __vue_script__$h = script$h;
-
+                var __vue_script__$h = script$h;
+                
     /* template */
     var __vue_render__$h = function() {
       var _vm = this;
@@ -2982,13 +3400,36 @@
       var __vue_module_identifier__$h = undefined;
       /* functional template */
       var __vue_is_functional_template__$h = false;
+      /* component normalizer */
+      function __vue_normalize__$h(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/container/Container.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dContainer = normalizeComponent_1(
+      var dContainer = __vue_normalize__$h(
         { render: __vue_render__$h, staticRenderFns: __vue_staticRenderFns__$h },
         __vue_inject_styles__$h,
         __vue_script__$h,
@@ -3063,8 +3504,8 @@
     };
 
     /* script */
-    var __vue_script__$i = script$i;
-
+                var __vue_script__$i = script$i;
+                
     /* template */
     var __vue_render__$i = function() {
       var _vm = this;
@@ -3097,13 +3538,36 @@
       var __vue_module_identifier__$i = undefined;
       /* functional template */
       var __vue_is_functional_template__$i = false;
+      /* component normalizer */
+      function __vue_normalize__$i(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/container/Row.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dRow = normalizeComponent_1(
+      var dRow = __vue_normalize__$i(
         { render: __vue_render__$i, staticRenderFns: __vue_staticRenderFns__$i },
         __vue_inject_styles__$i,
         __vue_script__$i,
@@ -3247,8 +3711,8 @@
     };
 
     /* script */
-    var __vue_script__$j = script$j;
-
+                var __vue_script__$j = script$j;
+                
     /* template */
     var __vue_render__$j = function() {
       var _vm = this;
@@ -3284,13 +3748,36 @@
       var __vue_module_identifier__$j = undefined;
       /* functional template */
       var __vue_is_functional_template__$j = false;
+      /* component normalizer */
+      function __vue_normalize__$j(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/container/Col.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dCol = normalizeComponent_1(
+      var dCol = __vue_normalize__$j(
         { render: __vue_render__$j, staticRenderFns: __vue_staticRenderFns__$j },
         __vue_inject_styles__$j,
         __vue_script__$j,
@@ -3484,8 +3971,8 @@
     };
 
     /* script */
-    var __vue_script__$k = script$k;
-
+                var __vue_script__$k = script$k;
+                
     /* template */
     var __vue_render__$k = function() {
       var _vm = this;
@@ -3542,7 +4029,7 @@
       /* style */
       var __vue_inject_styles__$k = function (inject) {
         if (!inject) { return }
-        inject("data-v-185c8ca8_0", { source: "div.vdp-datepicker__calendar {\n  color: #5a6169;\n  padding: 20px 22px;\n  min-width: 10rem;\n  font-size: 1rem;\n  font-weight: 300;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\";\n  background-color: #fff;\n  border: 1px solid rgba(0, 0, 0, 0.05);\n  border-radius: 0.375rem;\n  box-shadow: 0 0.5rem 4rem rgba(0, 0, 0, 0.11), 0 10px 20px rgba(0, 0, 0, 0.05), 0 2px 3px rgba(0, 0, 0, 0.06);\n  border: 1px solid rgba(0, 0, 0, 0.15) !important;\n}\ndiv.vdp-datepicker__calendar header {\n    display: flex;\n    padding-bottom: 10px;\n}\ndiv.vdp-datepicker__calendar header span {\n      transition: all 250ms cubic-bezier(0.27, 0.01, 0.38, 1.06);\n      border-radius: 0.375rem;\n      font-weight: 500;\n}\ndiv.vdp-datepicker__calendar header span.next:after {\n        border-left-color: #c3c7cc;\n}\ndiv.vdp-datepicker__calendar header span.prev:after {\n        border-right-color: #c3c7cc;\n}\ndiv.vdp-datepicker__calendar header span:hover,\n  div.vdp-datepicker__calendar .cell.day:not(.disabled):not(.blank):hover, div.vdp-datepicker__calendar .cell.month:hover, div.vdp-datepicker__calendar .cell.year:hover {\n    background-color: #eceeef;\n    border-color: transparent !important;\n}\ndiv.vdp-datepicker__calendar .cell {\n    line-height: 2;\n    font-size: 1rem;\n    border-radius: 0.375rem;\n    transition: all 250ms cubic-bezier(0.27, 0.01, 0.38, 1.06);\n    border-color: transparent;\n    height: auto;\n}\ndiv.vdp-datepicker__calendar .cell.day-header {\n      font-weight: 500;\n}\ndiv.vdp-datepicker__calendar .cell.day {\n      width: 36px;\n      height: 36px;\n      border-radius: 50%;\n}\ndiv.vdp-datepicker__calendar .cell.month, div.vdp-datepicker__calendar .cell.year {\n      height: 36px;\n      font-size: 12px;\n      line-height: 33px;\n}\ndiv.vdp-datepicker__calendar .cell.selected, div.vdp-datepicker__calendar .cell.highlighted.selected {\n      background: #007bff !important;\n      color: #fff;\n}\ndiv.vdp-datepicker__calendar .cell.selected:hover, div.vdp-datepicker__calendar .cell.highlighted.selected:hover {\n        background: #006fe6 !important;\n        border-color: transparent !important;\n}\ndiv.vdp-datepicker__calendar .cell.highlighted {\n      background: #007bff;\n      color: #fff;\n}\ndiv.vdp-datepicker__calendar .cell.highlighted:hover {\n        background: #006fe6 !important;\n        border-color: transparent !important;\n}\ndiv.vdp-datepicker__calendar .cell.highlighted:not(.highlight-start):not(.highlight-end) {\n        border-radius: 0;\n}\ndiv.vdp-datepicker__calendar .cell.highlighted.highlight-start {\n        border-top-right-radius: 0;\n        border-bottom-right-radius: 0;\n}\ndiv.vdp-datepicker__calendar .cell.highlighted.highlight-end {\n        border-top-left-radius: 0;\n        border-bottom-left-radius: 0;\n}\ndiv.vdp-datepicker__small {\n  padding: 0.625rem 0.625rem;\n  font-size: 0.75rem;\n  max-width: 235px;\n}\ndiv.vdp-datepicker__small .cell.day {\n    width: 1.875rem;\n    height: 1.875rem;\n    line-height: 2.25;\n}\ndiv.vdp-datepicker__small .cell.day, div.vdp-datepicker__small .cell.month, div.vdp-datepicker__small .cell.year {\n    font-size: 12px;\n    font-weight: 500;\n}\ndiv.vdp-datepicker__small .cell.day-header {\n    font-size: 100%;\n}\n\n/*# sourceMappingURL=Datepicker.vue.map */", map: {"version":3,"sources":["/Users/dziudek/Desktop/Github/shards-vue/src/components/datepicker/Datepicker.vue","Datepicker.vue"],"names":[],"mappings":"AA4PA;EAEA,cA1CA;EA2CA,kBA9BA;EA+BA,gBAnCA;EAoCA,eAjCA;EAkCA,gBA/BA;EAgCA,iKAzCA;EA0CA,sBArDA;EAsDA,qCArDA;EAsDA,uBA9CA;EA+CA,6GAvDA;EAwDA,gDAAA;AAAA;AAZA;IAgBA,aAAA;IACA,oBAAA;AAAA;AAjBA;MAoBA,0DAvDA;MAwDA,uBAzDA;MA0DA,gBAAA;AAAA;AAtBA;QAyBA,0BAnEA;AAAA;AA0CA;QA6BA,2BAvEA;AAAA;AA0CA;;IAsCA,yBA7EA;IA8EA,oCAAA;AAAA;AAvCA;IA6CA,cA7DA;IA8DA,eA7DA;IA8DA,uBAnFA;IAoFA,0DAnFA;IAoFA,yBAtFA;IAuFA,YAAA;AAAA;AAlDA;MAsDA,gBAAA;AAAA;AAtDA;MA2DA,WA9EA;MA+EA,YA9EA;MA+EA,kBAAA;AAAA;AA7DA;MAmEA,YArFA;MAsFA,eAAA;MACA,iBAAA;AAAA;AArEA;MA2EA,8BAAA;MACA,WAzHA;AAAA;AA6CA;QA8EA,8BAAA;QACA,oCAAA;AAAA;AA/EA;MAoFA,mBA7HA;MA8HA,WAlIA;AAAA;AA6CA;QAwFA,8BAAA;QACA,oCAAA;AAAA;AAzFA;QA6FA,gBAAA;AAAA;AA7FA;QAiGA,0BAAA;QACA,6BAAA;AAAA;AAlGA;QAsGA,yBAAA;QACA,4BAAA;AAAA;AAvGA;EA+GA,0BA3HA;EA4HA,kBA3HA;EA4HA,gBA3HA;AAAA;AAUA;IAqHA,eA3HA;IA4HA,gBA3HA;IA4HA,iBA3HA;AAAA;AAIA;IA6HA,eArIA;IAsIA,gBArIA;AAAA;AAOA;IAkIA,eApIA;AAAA;;AC3KA,yCAAyC","file":"Datepicker.vue","sourcesContent":["<template>\n    <VueDatepicker\n        :value=\"value\"\n        :name=\"name\"\n        :id=\"id\"\n        :format=\"format\"\n        :language=\"language\"\n        :open-date=\"openDate\"\n        :day-cell-content=\"dayCellContent\"\n        :full-month-name=\"fullMonthName\"\n        :disabled-dates=\"disabledDates\"\n        :highlighted=\"highlighted\"\n        :placeholder=\"placeholder\"\n        :inline=\"inline\"\n        :calendar-class=\"computedCalendarClass\"\n        :input-class=\"inputClass\"\n        :wrapper-class=\"wrapperClass\"\n        :monday-first=\"mondayFirst\"\n        :clear-button=\"clearButton\"\n        :clear-button-icon=\"clearButtonIcon\"\n        :calendar-button=\"calendarButton\"\n        :calendar-button-icon=\"calendarButtonIcon\"\n        :calendar-button-icon-content=\"calendarButtonIconContent\"\n        :initial-view=\"initialView\"\n        :disabled=\"disabled\"\n        :required=\"required\"\n        :typeable=\"typeable\"\n        :use-utc=\"useUtc\"\n        :minimum-view=\"minimumView\"\n        :maximum-view=\"maximumView\"\n        v-on=\"$listeners\">\n            <slot name=\"beforeCalendarHeader\" slot=\"beforeCalendarHeader\" />\n            <slot name=\"afterDateInput\" slot=\"afterDateInput\" />\n    </VueDatepicker>\n</template>\n\n<script>\nimport VueDatepicker from 'vuejs-datepicker'\n\n// Validator function that checks the date props.\nconst _datePropValidator = (v) => {\n    return v === null\n            || v instanceof Date\n            || typeof v === 'string'\n            || typeof v === 'number'\n}\n\nexport default {\n    name: 'd-datepicker',\n    components: { VueDatepicker },\n    props: {\n        /**\n         * The datepicker's value.\n         */\n        value: {\n            validator: _datePropValidator\n        },\n        /**\n         * The name.\n         */\n        name: {\n            type: String,\n            default: null\n        },\n        /**\n         * The component's ID.\n         */\n        id: {\n            type: String,\n            default: null\n        },\n        /**\n         * The date format.\n         */\n        format: {\n            type: [String, Function],\n            default: 'dd MMM yyyy'\n        },\n        /**\n         * The language.\n         */\n        language: Object,\n        /**\n         * If set, the datepicker will open on this date.\n         */\n        openDate: {\n            validator: _datePropValidator\n        },\n        /**\n         * Function used to render custom content inside the day cell.\n         */\n        dayCellContent: Function,\n        /**\n         * Whether to show the full month name, or not.\n         */\n        fullMonthName: Boolean,\n        /**\n         * Configure disabled dates.\n         */\n        disabledDates: Object,\n        /**\n         * Highlight dates.\n         */\n        highlighted: Object,\n        /**\n         * The placeholder.\n         */\n        placeholder: String,\n        /**\n         * Show the datepicker always open.\n         */\n        inline: Boolean,\n        /**\n         * The CSS class applied to the calendar element.\n         */\n        calendarClass: {\n            type: [String, Object, Array],\n            default: ''\n        },\n        /**\n         * The CSS Class applied to the input element.\n         */\n        inputClass: {\n            type: [String, Object, Array],\n            default: 'form-control'\n        },\n        /**\n         * The CSS class applied to the wrapper element.\n         */\n        wrapperClass: [String, Object, Array],\n        /**\n         * Whether Monday is the first day, or not.\n         */\n        mondayFirst: Boolean,\n        /**\n         * Display a button for clearing the dates.\n         */\n        clearButton: Boolean,\n        /**\n         * Use an icon for the clear button.\n         */\n        clearButtonIcon: String,\n        /**\n         * Dislay a calendar button.\n         */\n        calendarButton: Boolean,\n        /**\n         * The calendar button's icon.\n         */\n        calendarButtonIcon: String,\n        /**\n         * The calendar button's icon content.\n         */\n        calendarButtonIconContent: String,\n        /**\n         * If set, the datepicker is opened on that specific view.\n         */\n        initialView: String,\n        /**\n         * The disabled state.\n         */\n        disabled: Boolean,\n        /**\n         * The required state.\n         */\n        required: Boolean,\n        /**\n         * Whether to allow users to type the date, or not.\n         */\n        typeable: Boolean,\n        /**\n         * Use UTC for time calculations.\n         */\n        useUtc: Boolean,\n        /**\n         * If set, the lower-level views will not be shown.\n         */\n        minimumView: {\n            type: String,\n            default: 'day'\n        },\n        /**\n         * If set, the higher-level views will not be shown.\n         */\n        maximumView: {\n            type: String,\n            default: 'year'\n        },\n        /**\n         * Whether the datepicker should be small, or not.\n         */\n        small: {\n            type: Boolean,\n            default: false\n        }\n    },\n    computed: {\n        computedCalendarClass() {\n            let _calendarClass = this.small ? 'vdp-datepicker__small' : ''\n\n            return _calendarClass += this.calendarClass\n        }\n    }\n}\n</script>\n\n<style lang=\"scss\">\n    $white: #fff;\n    $black: #000;\n\n    $color-silver-sand: #c3c7cc;\n    $color-primary: #007bff;\n    $color-shuttle-gray: #5a6169;\n    $color-porcelain: #eceeef;\n\n    $border-color: transparent;\n    $border-radius-default: .375rem;\n    $transition-default: all 250ms cubic-bezier(.27,.01,.38,1.06);\n    $font-system: -apple-system, BlinkMacSystemFont,  \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\";\n\n    $datepicker-color: $color-shuttle-gray;\n    $datepicker-min-width: 10rem;\n    $datepicker-background-color: $white;\n    $datepicker-border-radius: $border-radius-default;\n    $datepicker-font-size: 1rem;\n    $datepicker-padding-x: 22px;\n    $datepicker-padding-y: 20px;\n    $datepicker-font-weight: 300;\n    $datepicker-border: 1px solid rgba($black,.05);\n    $datepicker-drop-shadows: 0 0.5rem 4rem rgba($black,.11),\n                            0 10px 20px rgba($black,.05),\n                            0 2px 3px rgba($black,.06);\n\n    $datepicker-cell-width: 36px;\n    $datepicker-cell-height: 36px;\n    $datepicker-cell-hover-color: $color-porcelain;\n    $datepicker-cell-line-height: 2;\n    $datepicker-cell-font-size: 1rem;\n\n    $datepicker-small-padding-y: .625rem;\n    $datepicker-small-padding-x: .625rem;\n    $datepicker-small-font-size: .75rem;\n    $datepicker-small-max-width: 235px;\n\n    $datepicker-small-day-font-size: 12px;\n    $datepicker-small-day-font-weight: 500;\n    $datepicker-small-day-width: 1.875rem;\n    $datepicker-small-day-height: 1.875rem;\n    $datepicker-small-day-line-height: 2.25;\n\n    $datepicker-small-day-header-font-size: 100%;\n\n    div.vdp-datepicker {\n        &__calendar {\n            color: $datepicker-color;\n            padding: $datepicker-padding-y $datepicker-padding-x;\n            min-width: $datepicker-min-width;\n            font-size: $datepicker-font-size;\n            font-weight: $datepicker-font-weight;\n            font-family: $font-system;\n            background-color: $datepicker-background-color;\n            border: $datepicker-border;\n            border-radius: $datepicker-border-radius;\n            box-shadow: $datepicker-drop-shadows;\n            border: 1px solid rgba($black,.15) !important;\n\n            // Header\n            header {\n                display: flex;\n                padding-bottom: 10px;\n\n                span {\n                    transition: $transition-default;\n                    border-radius: $border-radius-default;\n                    font-weight: 500;\n\n                    &.next:after {\n                        border-left-color: $color-silver-sand;\n                    }\n\n                    &.prev:after {\n                        border-right-color: $color-silver-sand;\n                    }\n                }\n            }\n\n            // Header elements and specific calendar cells.\n            header span,\n            .cell.day:not(.disabled):not(.blank), .cell.month, .cell.year {\n                &:hover {\n                    background-color: $datepicker-cell-hover-color;\n                    border-color: $border-color !important;\n                }\n            }\n\n            // Cells\n            .cell {\n                line-height: $datepicker-cell-line-height;\n                font-size: $datepicker-cell-font-size;\n                border-radius: $border-radius-default;\n                transition: $transition-default;\n                border-color: $border-color;\n                height: auto;\n\n                // Day headers\n                &.day-header {\n                    font-weight: 500;\n                }\n\n                // Days\n                &.day {\n                    width: $datepicker-cell-width;\n                    height: $datepicker-cell-height;\n                    border-radius: 50%;\n                }\n\n                // Months\n                &.month,\n                &.year {\n                    height: $datepicker-cell-height;\n                    font-size: 12px;\n                    line-height: 33px;\n                }\n\n                // Selected\n                &.selected,\n                &.highlighted.selected {\n                    background: $color-primary !important;\n                    color: $white;\n                    &:hover {\n                        background: darken($color-primary, 5) !important;\n                        border-color: $border-color !important;\n                    }\n                }\n\n                &.highlighted {\n                    background: $color-primary;\n                    color: $white;\n\n                    &:hover {\n                        background: darken($color-primary, 5) !important;\n                        border-color: $border-color !important;\n                    }\n\n                    &:not(.highlight-start):not(.highlight-end) {\n                        border-radius: 0;\n                    }\n\n                    &.highlight-start {\n                        border-top-right-radius: 0;\n                        border-bottom-right-radius: 0;\n                    }\n\n                    &.highlight-end {\n                        border-top-left-radius: 0;\n                        border-bottom-left-radius: 0;\n                    }\n                }\n            }\n        }\n\n        // Small Datepicker modifier.\n        &__small {\n            padding: $datepicker-small-padding-y $datepicker-small-padding-x;\n            font-size: $datepicker-small-font-size;\n            max-width: $datepicker-small-max-width;\n\n            .cell {\n                &.day {\n                    width: $datepicker-small-day-width;\n                    height: $datepicker-small-day-height;\n                    line-height: $datepicker-small-day-line-height;\n                }\n\n                &.day,\n                &.month,\n                &.year {\n                    font-size: $datepicker-small-day-font-size;\n                    font-weight: $datepicker-small-day-font-weight;\n                }\n\n                &.day-header {\n                    font-size: $datepicker-small-day-header-font-size;\n                }\n            }\n        }\n    }\n</style>\n\n\n","div.vdp-datepicker__calendar {\n  color: #5a6169;\n  padding: 20px 22px;\n  min-width: 10rem;\n  font-size: 1rem;\n  font-weight: 300;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\";\n  background-color: #fff;\n  border: 1px solid rgba(0, 0, 0, 0.05);\n  border-radius: 0.375rem;\n  box-shadow: 0 0.5rem 4rem rgba(0, 0, 0, 0.11), 0 10px 20px rgba(0, 0, 0, 0.05), 0 2px 3px rgba(0, 0, 0, 0.06);\n  border: 1px solid rgba(0, 0, 0, 0.15) !important; }\n  div.vdp-datepicker__calendar header {\n    display: flex;\n    padding-bottom: 10px; }\n    div.vdp-datepicker__calendar header span {\n      transition: all 250ms cubic-bezier(0.27, 0.01, 0.38, 1.06);\n      border-radius: 0.375rem;\n      font-weight: 500; }\n      div.vdp-datepicker__calendar header span.next:after {\n        border-left-color: #c3c7cc; }\n      div.vdp-datepicker__calendar header span.prev:after {\n        border-right-color: #c3c7cc; }\n  div.vdp-datepicker__calendar header span:hover,\n  div.vdp-datepicker__calendar .cell.day:not(.disabled):not(.blank):hover, div.vdp-datepicker__calendar .cell.month:hover, div.vdp-datepicker__calendar .cell.year:hover {\n    background-color: #eceeef;\n    border-color: transparent !important; }\n  div.vdp-datepicker__calendar .cell {\n    line-height: 2;\n    font-size: 1rem;\n    border-radius: 0.375rem;\n    transition: all 250ms cubic-bezier(0.27, 0.01, 0.38, 1.06);\n    border-color: transparent;\n    height: auto; }\n    div.vdp-datepicker__calendar .cell.day-header {\n      font-weight: 500; }\n    div.vdp-datepicker__calendar .cell.day {\n      width: 36px;\n      height: 36px;\n      border-radius: 50%; }\n    div.vdp-datepicker__calendar .cell.month, div.vdp-datepicker__calendar .cell.year {\n      height: 36px;\n      font-size: 12px;\n      line-height: 33px; }\n    div.vdp-datepicker__calendar .cell.selected, div.vdp-datepicker__calendar .cell.highlighted.selected {\n      background: #007bff !important;\n      color: #fff; }\n      div.vdp-datepicker__calendar .cell.selected:hover, div.vdp-datepicker__calendar .cell.highlighted.selected:hover {\n        background: #006fe6 !important;\n        border-color: transparent !important; }\n    div.vdp-datepicker__calendar .cell.highlighted {\n      background: #007bff;\n      color: #fff; }\n      div.vdp-datepicker__calendar .cell.highlighted:hover {\n        background: #006fe6 !important;\n        border-color: transparent !important; }\n      div.vdp-datepicker__calendar .cell.highlighted:not(.highlight-start):not(.highlight-end) {\n        border-radius: 0; }\n      div.vdp-datepicker__calendar .cell.highlighted.highlight-start {\n        border-top-right-radius: 0;\n        border-bottom-right-radius: 0; }\n      div.vdp-datepicker__calendar .cell.highlighted.highlight-end {\n        border-top-left-radius: 0;\n        border-bottom-left-radius: 0; }\n\ndiv.vdp-datepicker__small {\n  padding: 0.625rem 0.625rem;\n  font-size: 0.75rem;\n  max-width: 235px; }\n  div.vdp-datepicker__small .cell.day {\n    width: 1.875rem;\n    height: 1.875rem;\n    line-height: 2.25; }\n  div.vdp-datepicker__small .cell.day, div.vdp-datepicker__small .cell.month, div.vdp-datepicker__small .cell.year {\n    font-size: 12px;\n    font-weight: 500; }\n  div.vdp-datepicker__small .cell.day-header {\n    font-size: 100%; }\n\n/*# sourceMappingURL=Datepicker.vue.map */"]}, media: undefined });
+        inject("data-v-185c8ca8_0", { source: "div.vdp-datepicker__calendar {\n  color: #5a6169;\n  padding: 20px 22px;\n  min-width: 10rem;\n  font-size: 1rem;\n  font-weight: 300;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\";\n  background-color: #fff;\n  border: 1px solid rgba(0, 0, 0, 0.05);\n  border-radius: 0.375rem;\n  box-shadow: 0 0.5rem 4rem rgba(0, 0, 0, 0.11), 0 10px 20px rgba(0, 0, 0, 0.05), 0 2px 3px rgba(0, 0, 0, 0.06);\n  border: 1px solid rgba(0, 0, 0, 0.15) !important;\n}\ndiv.vdp-datepicker__calendar header {\n  display: flex;\n  padding-bottom: 10px;\n}\ndiv.vdp-datepicker__calendar header span {\n  transition: all 250ms cubic-bezier(0.27, 0.01, 0.38, 1.06);\n  border-radius: 0.375rem;\n  font-weight: 500;\n}\ndiv.vdp-datepicker__calendar header span.next:after {\n  border-left-color: #c3c7cc;\n}\ndiv.vdp-datepicker__calendar header span.prev:after {\n  border-right-color: #c3c7cc;\n}\ndiv.vdp-datepicker__calendar header span:hover,\ndiv.vdp-datepicker__calendar .cell.day:not(.disabled):not(.blank):hover, div.vdp-datepicker__calendar .cell.month:hover, div.vdp-datepicker__calendar .cell.year:hover {\n  background-color: #eceeef;\n  border-color: transparent !important;\n}\ndiv.vdp-datepicker__calendar .cell {\n  line-height: 2;\n  font-size: 1rem;\n  border-radius: 0.375rem;\n  transition: all 250ms cubic-bezier(0.27, 0.01, 0.38, 1.06);\n  border-color: transparent;\n  height: auto;\n}\ndiv.vdp-datepicker__calendar .cell.day-header {\n  font-weight: 500;\n}\ndiv.vdp-datepicker__calendar .cell.day {\n  width: 36px;\n  height: 36px;\n  border-radius: 50%;\n}\ndiv.vdp-datepicker__calendar .cell.month, div.vdp-datepicker__calendar .cell.year {\n  height: 36px;\n  font-size: 12px;\n  line-height: 33px;\n}\ndiv.vdp-datepicker__calendar .cell.selected, div.vdp-datepicker__calendar .cell.highlighted.selected {\n  background: #007bff !important;\n  color: #fff;\n}\ndiv.vdp-datepicker__calendar .cell.selected:hover, div.vdp-datepicker__calendar .cell.highlighted.selected:hover {\n  background: #006fe6 !important;\n  border-color: transparent !important;\n}\ndiv.vdp-datepicker__calendar .cell.highlighted {\n  background: #007bff;\n  color: #fff;\n}\ndiv.vdp-datepicker__calendar .cell.highlighted:hover {\n  background: #006fe6 !important;\n  border-color: transparent !important;\n}\ndiv.vdp-datepicker__calendar .cell.highlighted:not(.highlight-start):not(.highlight-end) {\n  border-radius: 0;\n}\ndiv.vdp-datepicker__calendar .cell.highlighted.highlight-start {\n  border-top-right-radius: 0;\n  border-bottom-right-radius: 0;\n}\ndiv.vdp-datepicker__calendar .cell.highlighted.highlight-end {\n  border-top-left-radius: 0;\n  border-bottom-left-radius: 0;\n}\ndiv.vdp-datepicker__small {\n  padding: 0.625rem 0.625rem;\n  font-size: 0.75rem;\n  max-width: 235px;\n}\ndiv.vdp-datepicker__small .cell.day {\n  width: 1.875rem;\n  height: 1.875rem;\n  line-height: 2.25;\n}\ndiv.vdp-datepicker__small .cell.day, div.vdp-datepicker__small .cell.month, div.vdp-datepicker__small .cell.year {\n  font-size: 12px;\n  font-weight: 500;\n}\ndiv.vdp-datepicker__small .cell.day-header {\n  font-size: 100%;\n}\n\n/*# sourceMappingURL=Datepicker.vue.map */", map: {"version":3,"sources":["/Users/dziudek/Desktop/Github/shards-vue/src/components/datepicker/Datepicker.vue","Datepicker.vue"],"names":[],"mappings":"AA6PA;EACA,cA1CA;EA2CA,kBAAA;EACA,gBAnCA;EAoCA,eAjCA;EAkCA,gBA/BA;EAgCA,iKAzCA;EA0CA,sBArDA;EAsDA,qCAjCA;EAkCA,uBA9CA;EA+CA,6GAlCA;EAmCA,gDAAA;AC5PA;AD+PA;EACA,aAAA;EACA,oBAAA;AC7PA;AD+PA;EACA,0DAvDA;EAwDA,uBAzDA;EA0DA,gBAAA;AC7PA;AD+PA;EACA,0BAnEA;AC1LA;ADgQA;EACA,2BAvEA;ACvLA;ADsQA;;EACA,yBA7EA;EA8EA,oCAAA;ACnQA;ADwQA;EACA,cA7DA;EA8DA,eA7DA;EA8DA,uBAnFA;EAoFA,0DAnFA;EAoFA,yBAtFA;EAuFA,YAAA;ACtQA;ADyQA;EACA,gBAAA;ACvQA;AD2QA;EACA,WA9EA;EA+EA,YA9EA;EA+EA,kBAAA;ACzQA;AD6QA;EAEA,YArFA;EAsFA,eAAA;EACA,iBAAA;AC5QA;ADgRA;EAEA,8BAAA;EACA,WAzHA;ACtJA;ADgRA;EACA,8BAAA;EACA,oCAAA;AC9QA;ADkRA;EACA,mBA7HA;EA8HA,WAlIA;AC9IA;ADkRA;EACA,8BAAA;EACA,oCAAA;AChRA;ADmRA;EACA,gBAAA;ACjRA;ADoRA;EACA,0BAAA;EACA,6BAAA;AClRA;ADqRA;EACA,yBAAA;EACA,4BAAA;ACnRA;AD0RA;EACA,0BAAA;EACA,kBA3HA;EA4HA,gBA3HA;AC7JA;AD2RA;EACA,eA3HA;EA4HA,gBA3HA;EA4HA,iBA3HA;AC9JA;AD4RA;EAGA,eArIA;EAsIA,gBArIA;ACvJA;AD+RA;EACA,eApIA;ACzJA;;AAEA,yCAAyC","file":"Datepicker.vue","sourcesContent":["<template>\n    <VueDatepicker\n        :value=\"value\"\n        :name=\"name\"\n        :id=\"id\"\n        :format=\"format\"\n        :language=\"language\"\n        :open-date=\"openDate\"\n        :day-cell-content=\"dayCellContent\"\n        :full-month-name=\"fullMonthName\"\n        :disabled-dates=\"disabledDates\"\n        :highlighted=\"highlighted\"\n        :placeholder=\"placeholder\"\n        :inline=\"inline\"\n        :calendar-class=\"computedCalendarClass\"\n        :input-class=\"inputClass\"\n        :wrapper-class=\"wrapperClass\"\n        :monday-first=\"mondayFirst\"\n        :clear-button=\"clearButton\"\n        :clear-button-icon=\"clearButtonIcon\"\n        :calendar-button=\"calendarButton\"\n        :calendar-button-icon=\"calendarButtonIcon\"\n        :calendar-button-icon-content=\"calendarButtonIconContent\"\n        :initial-view=\"initialView\"\n        :disabled=\"disabled\"\n        :required=\"required\"\n        :typeable=\"typeable\"\n        :use-utc=\"useUtc\"\n        :minimum-view=\"minimumView\"\n        :maximum-view=\"maximumView\"\n        v-on=\"$listeners\">\n            <slot name=\"beforeCalendarHeader\" slot=\"beforeCalendarHeader\" />\n            <slot name=\"afterDateInput\" slot=\"afterDateInput\" />\n    </VueDatepicker>\n</template>\n\n<script>\nimport VueDatepicker from 'vuejs-datepicker'\n\n// Validator function that checks the date props.\nconst _datePropValidator = (v) => {\n    return v === null\n            || v instanceof Date\n            || typeof v === 'string'\n            || typeof v === 'number'\n}\n\nexport default {\n    name: 'd-datepicker',\n    components: { VueDatepicker },\n    props: {\n        /**\n         * The datepicker's value.\n         */\n        value: {\n            validator: _datePropValidator\n        },\n        /**\n         * The name.\n         */\n        name: {\n            type: String,\n            default: null\n        },\n        /**\n         * The component's ID.\n         */\n        id: {\n            type: String,\n            default: null\n        },\n        /**\n         * The date format.\n         */\n        format: {\n            type: [String, Function],\n            default: 'dd MMM yyyy'\n        },\n        /**\n         * The language.\n         */\n        language: Object,\n        /**\n         * If set, the datepicker will open on this date.\n         */\n        openDate: {\n            validator: _datePropValidator\n        },\n        /**\n         * Function used to render custom content inside the day cell.\n         */\n        dayCellContent: Function,\n        /**\n         * Whether to show the full month name, or not.\n         */\n        fullMonthName: Boolean,\n        /**\n         * Configure disabled dates.\n         */\n        disabledDates: Object,\n        /**\n         * Highlight dates.\n         */\n        highlighted: Object,\n        /**\n         * The placeholder.\n         */\n        placeholder: String,\n        /**\n         * Show the datepicker always open.\n         */\n        inline: Boolean,\n        /**\n         * The CSS class applied to the calendar element.\n         */\n        calendarClass: {\n            type: [String, Object, Array],\n            default: ''\n        },\n        /**\n         * The CSS Class applied to the input element.\n         */\n        inputClass: {\n            type: [String, Object, Array],\n            default: 'form-control'\n        },\n        /**\n         * The CSS class applied to the wrapper element.\n         */\n        wrapperClass: [String, Object, Array],\n        /**\n         * Whether Monday is the first day, or not.\n         */\n        mondayFirst: Boolean,\n        /**\n         * Display a button for clearing the dates.\n         */\n        clearButton: Boolean,\n        /**\n         * Use an icon for the clear button.\n         */\n        clearButtonIcon: String,\n        /**\n         * Dislay a calendar button.\n         */\n        calendarButton: Boolean,\n        /**\n         * The calendar button's icon.\n         */\n        calendarButtonIcon: String,\n        /**\n         * The calendar button's icon content.\n         */\n        calendarButtonIconContent: String,\n        /**\n         * If set, the datepicker is opened on that specific view.\n         */\n        initialView: String,\n        /**\n         * The disabled state.\n         */\n        disabled: Boolean,\n        /**\n         * The required state.\n         */\n        required: Boolean,\n        /**\n         * Whether to allow users to type the date, or not.\n         */\n        typeable: Boolean,\n        /**\n         * Use UTC for time calculations.\n         */\n        useUtc: Boolean,\n        /**\n         * If set, the lower-level views will not be shown.\n         */\n        minimumView: {\n            type: String,\n            default: 'day'\n        },\n        /**\n         * If set, the higher-level views will not be shown.\n         */\n        maximumView: {\n            type: String,\n            default: 'year'\n        },\n        /**\n         * Whether the datepicker should be small, or not.\n         */\n        small: {\n            type: Boolean,\n            default: false\n        }\n    },\n    computed: {\n        computedCalendarClass() {\n            let _calendarClass = this.small ? 'vdp-datepicker__small' : ''\n\n            return _calendarClass += this.calendarClass\n        }\n    }\n}\n</script>\n\n<style lang=\"scss\">\n    $white: #fff;\n    $black: #000;\n\n    $color-silver-sand: #c3c7cc;\n    $color-primary: #007bff;\n    $color-shuttle-gray: #5a6169;\n    $color-porcelain: #eceeef;\n\n    $border-color: transparent;\n    $border-radius-default: .375rem;\n    $transition-default: all 250ms cubic-bezier(.27,.01,.38,1.06);\n    $font-system: -apple-system, BlinkMacSystemFont,  \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\";\n\n    $datepicker-color: $color-shuttle-gray;\n    $datepicker-min-width: 10rem;\n    $datepicker-background-color: $white;\n    $datepicker-border-radius: $border-radius-default;\n    $datepicker-font-size: 1rem;\n    $datepicker-padding-x: 22px;\n    $datepicker-padding-y: 20px;\n    $datepicker-font-weight: 300;\n    $datepicker-border: 1px solid rgba($black,.05);\n    $datepicker-drop-shadows: 0 0.5rem 4rem rgba($black,.11),\n                            0 10px 20px rgba($black,.05),\n                            0 2px 3px rgba($black,.06);\n\n    $datepicker-cell-width: 36px;\n    $datepicker-cell-height: 36px;\n    $datepicker-cell-hover-color: $color-porcelain;\n    $datepicker-cell-line-height: 2;\n    $datepicker-cell-font-size: 1rem;\n\n    $datepicker-small-padding-y: .625rem;\n    $datepicker-small-padding-x: .625rem;\n    $datepicker-small-font-size: .75rem;\n    $datepicker-small-max-width: 235px;\n\n    $datepicker-small-day-font-size: 12px;\n    $datepicker-small-day-font-weight: 500;\n    $datepicker-small-day-width: 1.875rem;\n    $datepicker-small-day-height: 1.875rem;\n    $datepicker-small-day-line-height: 2.25;\n\n    $datepicker-small-day-header-font-size: 100%;\n\n    div.vdp-datepicker {\n        &__calendar {\n            color: $datepicker-color;\n            padding: $datepicker-padding-y $datepicker-padding-x;\n            min-width: $datepicker-min-width;\n            font-size: $datepicker-font-size;\n            font-weight: $datepicker-font-weight;\n            font-family: $font-system;\n            background-color: $datepicker-background-color;\n            border: $datepicker-border;\n            border-radius: $datepicker-border-radius;\n            box-shadow: $datepicker-drop-shadows;\n            border: 1px solid rgba($black,.15) !important;\n\n            // Header\n            header {\n                display: flex;\n                padding-bottom: 10px;\n\n                span {\n                    transition: $transition-default;\n                    border-radius: $border-radius-default;\n                    font-weight: 500;\n\n                    &.next:after {\n                        border-left-color: $color-silver-sand;\n                    }\n\n                    &.prev:after {\n                        border-right-color: $color-silver-sand;\n                    }\n                }\n            }\n\n            // Header elements and specific calendar cells.\n            header span,\n            .cell.day:not(.disabled):not(.blank), .cell.month, .cell.year {\n                &:hover {\n                    background-color: $datepicker-cell-hover-color;\n                    border-color: $border-color !important;\n                }\n            }\n\n            // Cells\n            .cell {\n                line-height: $datepicker-cell-line-height;\n                font-size: $datepicker-cell-font-size;\n                border-radius: $border-radius-default;\n                transition: $transition-default;\n                border-color: $border-color;\n                height: auto;\n\n                // Day headers\n                &.day-header {\n                    font-weight: 500;\n                }\n\n                // Days\n                &.day {\n                    width: $datepicker-cell-width;\n                    height: $datepicker-cell-height;\n                    border-radius: 50%;\n                }\n\n                // Months\n                &.month,\n                &.year {\n                    height: $datepicker-cell-height;\n                    font-size: 12px;\n                    line-height: 33px;\n                }\n\n                // Selected\n                &.selected,\n                &.highlighted.selected {\n                    background: $color-primary !important;\n                    color: $white;\n                    &:hover {\n                        background: darken($color-primary, 5) !important;\n                        border-color: $border-color !important;\n                    }\n                }\n\n                &.highlighted {\n                    background: $color-primary;\n                    color: $white;\n\n                    &:hover {\n                        background: darken($color-primary, 5) !important;\n                        border-color: $border-color !important;\n                    }\n\n                    &:not(.highlight-start):not(.highlight-end) {\n                        border-radius: 0;\n                    }\n\n                    &.highlight-start {\n                        border-top-right-radius: 0;\n                        border-bottom-right-radius: 0;\n                    }\n\n                    &.highlight-end {\n                        border-top-left-radius: 0;\n                        border-bottom-left-radius: 0;\n                    }\n                }\n            }\n        }\n\n        // Small Datepicker modifier.\n        &__small {\n            padding: $datepicker-small-padding-y $datepicker-small-padding-x;\n            font-size: $datepicker-small-font-size;\n            max-width: $datepicker-small-max-width;\n\n            .cell {\n                &.day {\n                    width: $datepicker-small-day-width;\n                    height: $datepicker-small-day-height;\n                    line-height: $datepicker-small-day-line-height;\n                }\n\n                &.day,\n                &.month,\n                &.year {\n                    font-size: $datepicker-small-day-font-size;\n                    font-weight: $datepicker-small-day-font-weight;\n                }\n\n                &.day-header {\n                    font-size: $datepicker-small-day-header-font-size;\n                }\n            }\n        }\n    }\n</style>\n\n\n","div.vdp-datepicker__calendar {\n  color: #5a6169;\n  padding: 20px 22px;\n  min-width: 10rem;\n  font-size: 1rem;\n  font-weight: 300;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\";\n  background-color: #fff;\n  border: 1px solid rgba(0, 0, 0, 0.05);\n  border-radius: 0.375rem;\n  box-shadow: 0 0.5rem 4rem rgba(0, 0, 0, 0.11), 0 10px 20px rgba(0, 0, 0, 0.05), 0 2px 3px rgba(0, 0, 0, 0.06);\n  border: 1px solid rgba(0, 0, 0, 0.15) !important;\n}\ndiv.vdp-datepicker__calendar header {\n  display: flex;\n  padding-bottom: 10px;\n}\ndiv.vdp-datepicker__calendar header span {\n  transition: all 250ms cubic-bezier(0.27, 0.01, 0.38, 1.06);\n  border-radius: 0.375rem;\n  font-weight: 500;\n}\ndiv.vdp-datepicker__calendar header span.next:after {\n  border-left-color: #c3c7cc;\n}\ndiv.vdp-datepicker__calendar header span.prev:after {\n  border-right-color: #c3c7cc;\n}\ndiv.vdp-datepicker__calendar header span:hover,\ndiv.vdp-datepicker__calendar .cell.day:not(.disabled):not(.blank):hover, div.vdp-datepicker__calendar .cell.month:hover, div.vdp-datepicker__calendar .cell.year:hover {\n  background-color: #eceeef;\n  border-color: transparent !important;\n}\ndiv.vdp-datepicker__calendar .cell {\n  line-height: 2;\n  font-size: 1rem;\n  border-radius: 0.375rem;\n  transition: all 250ms cubic-bezier(0.27, 0.01, 0.38, 1.06);\n  border-color: transparent;\n  height: auto;\n}\ndiv.vdp-datepicker__calendar .cell.day-header {\n  font-weight: 500;\n}\ndiv.vdp-datepicker__calendar .cell.day {\n  width: 36px;\n  height: 36px;\n  border-radius: 50%;\n}\ndiv.vdp-datepicker__calendar .cell.month, div.vdp-datepicker__calendar .cell.year {\n  height: 36px;\n  font-size: 12px;\n  line-height: 33px;\n}\ndiv.vdp-datepicker__calendar .cell.selected, div.vdp-datepicker__calendar .cell.highlighted.selected {\n  background: #007bff !important;\n  color: #fff;\n}\ndiv.vdp-datepicker__calendar .cell.selected:hover, div.vdp-datepicker__calendar .cell.highlighted.selected:hover {\n  background: #006fe6 !important;\n  border-color: transparent !important;\n}\ndiv.vdp-datepicker__calendar .cell.highlighted {\n  background: #007bff;\n  color: #fff;\n}\ndiv.vdp-datepicker__calendar .cell.highlighted:hover {\n  background: #006fe6 !important;\n  border-color: transparent !important;\n}\ndiv.vdp-datepicker__calendar .cell.highlighted:not(.highlight-start):not(.highlight-end) {\n  border-radius: 0;\n}\ndiv.vdp-datepicker__calendar .cell.highlighted.highlight-start {\n  border-top-right-radius: 0;\n  border-bottom-right-radius: 0;\n}\ndiv.vdp-datepicker__calendar .cell.highlighted.highlight-end {\n  border-top-left-radius: 0;\n  border-bottom-left-radius: 0;\n}\ndiv.vdp-datepicker__small {\n  padding: 0.625rem 0.625rem;\n  font-size: 0.75rem;\n  max-width: 235px;\n}\ndiv.vdp-datepicker__small .cell.day {\n  width: 1.875rem;\n  height: 1.875rem;\n  line-height: 2.25;\n}\ndiv.vdp-datepicker__small .cell.day, div.vdp-datepicker__small .cell.month, div.vdp-datepicker__small .cell.year {\n  font-size: 12px;\n  font-weight: 500;\n}\ndiv.vdp-datepicker__small .cell.day-header {\n  font-size: 100%;\n}\n\n/*# sourceMappingURL=Datepicker.vue.map */"]}, media: undefined });
 
       };
       /* scoped */
@@ -3551,18 +4038,122 @@
       var __vue_module_identifier__$k = undefined;
       /* functional template */
       var __vue_is_functional_template__$k = false;
+      /* component normalizer */
+      function __vue_normalize__$k(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/datepicker/Datepicker.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        {
+          var hook;
+          if (style) {
+            hook = function(context) {
+              style.call(this, createInjector(context));
+            };
+          }
+
+          if (hook !== undefined) {
+            if (component.functional) {
+              // register for functional component in vue file
+              var originalRender = component.render;
+              component.render = function renderWithStyleInjection(h, context) {
+                hook.call(context);
+                return originalRender(h, context)
+              };
+            } else {
+              // inject component registration as beforeCreate hook
+              var existing = component.beforeCreate;
+              component.beforeCreate = existing ? [].concat(existing, hook) : [hook];
+            }
+          }
+        }
+
+        return component
+      }
+      /* style inject */
+      function __vue_create_injector__$2() {
+        var head = document.head || document.getElementsByTagName('head')[0];
+        var styles = __vue_create_injector__$2.styles || (__vue_create_injector__$2.styles = {});
+        var isOldIE =
+          typeof navigator !== 'undefined' &&
+          /msie [6-9]\\b/.test(navigator.userAgent.toLowerCase());
+
+        return function addStyle(id, css) {
+          if (document.querySelector('style[data-vue-ssr-id~="' + id + '"]')) { return } // SSR styles are present.
+
+          var group = isOldIE ? css.media || 'default' : id;
+          var style = styles[group] || (styles[group] = { ids: [], parts: [], element: undefined });
+
+          if (!style.ids.includes(id)) {
+            var code = css.source;
+            var index = style.ids.length;
+
+            style.ids.push(id);
+
+            if (isOldIE) {
+              style.element = style.element || document.querySelector('style[data-group=' + group + ']');
+            }
+
+            if (!style.element) {
+              var el = style.element = document.createElement('style');
+              el.type = 'text/css';
+
+              if (css.media) { el.setAttribute('media', css.media); }
+              if (isOldIE) {
+                el.setAttribute('data-group', group);
+                el.setAttribute('data-next-index', '0');
+              }
+
+              head.appendChild(el);
+            }
+
+            if (isOldIE) {
+              index = parseInt(style.element.getAttribute('data-next-index'));
+              style.element.setAttribute('data-next-index', index + 1);
+            }
+
+            if (style.element.styleSheet) {
+              style.parts.push(code);
+              style.element.styleSheet.cssText = style.parts
+                .filter(Boolean)
+                .join('\n');
+            } else {
+              var textNode = document.createTextNode(code);
+              var nodes = style.element.childNodes;
+              if (nodes[index]) { style.element.removeChild(nodes[index]); }
+              if (nodes.length) { style.element.insertBefore(textNode, nodes[index]); }
+              else { style.element.appendChild(textNode); }
+            }
+          }
+        }
+      }
       /* style inject SSR */
       
 
       
-      var dDatepicker = normalizeComponent_1(
+      var dDatepicker = __vue_normalize__$k(
         { render: __vue_render__$k, staticRenderFns: __vue_staticRenderFns__$k },
         __vue_inject_styles__$k,
         __vue_script__$k,
         __vue_scope_id__$k,
         __vue_is_functional_template__$k,
         __vue_module_identifier__$k,
-        browser,
+        __vue_create_injector__$2,
         undefined
       );
 
@@ -3580,7 +4171,7 @@
 
     /**!
      * @fileOverview Kickass library to create and place poppers near their reference elements.
-     * @version 1.16.0
+     * @version 1.14.4
      * @license
      * Copyright (c) 2016 Federico Zivolo and contributors
      *
@@ -3602,17 +4193,16 @@
      * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
      * SOFTWARE.
      */
-    var isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined' && typeof navigator !== 'undefined';
+    var isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
 
-    var timeoutDuration = function () {
-      var longerTimeoutBrowsers = ['Edge', 'Trident', 'Firefox'];
-      for (var i = 0; i < longerTimeoutBrowsers.length; i += 1) {
-        if (isBrowser && navigator.userAgent.indexOf(longerTimeoutBrowsers[i]) >= 0) {
-          return 1;
-        }
+    var longerTimeoutBrowsers = ['Edge', 'Trident', 'Firefox'];
+    var timeoutDuration = 0;
+    for (var i = 0; i < longerTimeoutBrowsers.length; i += 1) {
+      if (isBrowser && navigator.userAgent.indexOf(longerTimeoutBrowsers[i]) >= 0) {
+        timeoutDuration = 1;
+        break;
       }
-      return 0;
-    }();
+    }
 
     function microtaskDebounce(fn) {
       var called = false;
@@ -3678,8 +4268,7 @@
         return [];
       }
       // NOTE: 1 DOM access here
-      var window = element.ownerDocument.defaultView;
-      var css = window.getComputedStyle(element, null);
+      var css = getComputedStyle(element, null);
       return property ? css[property] : css;
     }
 
@@ -3732,17 +4321,6 @@
       return getScrollParent(getParentNode(element));
     }
 
-    /**
-     * Returns the reference node of the reference object, or the reference object itself.
-     * @method
-     * @memberof Popper.Utils
-     * @param {Element|Object} reference - the reference element (the popper will be relative to this)
-     * @returns {Element} parent
-     */
-    function getReferenceNode(reference) {
-      return reference && reference.referenceNode ? reference.referenceNode : reference;
-    }
-
     var isIE11 = isBrowser && !!(window.MSInputMethodContext && document.documentMode);
     var isIE10 = isBrowser && /MSIE 10/.test(navigator.userAgent);
 
@@ -3778,7 +4356,7 @@
       var noOffsetParent = isIE(10) ? document.body : null;
 
       // NOTE: 1 DOM access here
-      var offsetParent = element.offsetParent || null;
+      var offsetParent = element.offsetParent;
       // Skip hidden elements which don't have an offsetParent
       while (offsetParent === noOffsetParent && element.nextElementSibling) {
         offsetParent = (element = element.nextElementSibling).offsetParent;
@@ -3790,9 +4368,9 @@
         return element ? element.ownerDocument.documentElement : document.documentElement;
       }
 
-      // .offsetParent will return the closest TH, TD or TABLE in case
+      // .offsetParent will return the closest TD or TABLE in case
       // no offsetParent is present, I hate this job...
-      if (['TH', 'TD', 'TABLE'].indexOf(offsetParent.nodeName) !== -1 && getStyleComputedProperty(offsetParent, 'position') === 'static') {
+      if (['TD', 'TABLE'].indexOf(offsetParent.nodeName) !== -1 && getStyleComputedProperty(offsetParent, 'position') === 'static') {
         return getOffsetParent(offsetParent);
       }
 
@@ -4053,8 +4631,8 @@
 
       // subtract scrollbar size from sizes
       var sizes = element.nodeName === 'HTML' ? getWindowSizes(element.ownerDocument) : {};
-      var width = sizes.width || element.clientWidth || result.width;
-      var height = sizes.height || element.clientHeight || result.height;
+      var width = sizes.width || element.clientWidth || result.right - result.left;
+      var height = sizes.height || element.clientHeight || result.bottom - result.top;
 
       var horizScrollbar = element.offsetWidth - width;
       var vertScrollbar = element.offsetHeight - height;
@@ -4162,11 +4740,7 @@
       if (getStyleComputedProperty(element, 'position') === 'fixed') {
         return true;
       }
-      var parentNode = getParentNode(element);
-      if (!parentNode) {
-        return false;
-      }
-      return isFixed(parentNode);
+      return isFixed(getParentNode(element));
     }
 
     /**
@@ -4206,7 +4780,7 @@
       // NOTE: 1 DOM access here
 
       var boundaries = { top: 0, left: 0 };
-      var offsetParent = fixedPosition ? getFixedPositionOffsetParent(popper) : findCommonOffsetParent(popper, getReferenceNode(reference));
+      var offsetParent = fixedPosition ? getFixedPositionOffsetParent(popper) : findCommonOffsetParent(popper, reference);
 
       // Handle viewport case
       if (boundariesElement === 'viewport') {
@@ -4334,7 +4908,7 @@
     function getReferenceOffsets(state, popper, reference) {
       var fixedPosition = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 
-      var commonOffsetParent = fixedPosition ? getFixedPositionOffsetParent(popper) : findCommonOffsetParent(popper, getReferenceNode(reference));
+      var commonOffsetParent = fixedPosition ? getFixedPositionOffsetParent(popper) : findCommonOffsetParent(popper, reference);
       return getOffsetRectRelativeToArbitraryNode(reference, commonOffsetParent, fixedPosition);
     }
 
@@ -4346,10 +4920,9 @@
      * @returns {Object} object containing width and height properties
      */
     function getOuterSizes(element) {
-      var window = element.ownerDocument.defaultView;
-      var styles = window.getComputedStyle(element);
-      var x = parseFloat(styles.marginTop || 0) + parseFloat(styles.marginBottom || 0);
-      var y = parseFloat(styles.marginLeft || 0) + parseFloat(styles.marginRight || 0);
+      var styles = getComputedStyle(element);
+      var x = parseFloat(styles.marginTop) + parseFloat(styles.marginBottom);
+      var y = parseFloat(styles.marginLeft) + parseFloat(styles.marginRight);
       var result = {
         width: element.offsetWidth + y,
         height: element.offsetHeight + x
@@ -4596,7 +5169,7 @@
 
       this.disableEventListeners();
 
-      // remove the popper if user explicitly asked for the deletion on destroy
+      // remove the popper if user explicity asked for the deletion on destroy
       // do not use `remove` because IE11 doesn't support it
       if (this.options.removeOnDestroy) {
         this.popper.parentNode.removeChild(this.popper);
@@ -4801,57 +5374,6 @@
 
     /**
      * @function
-     * @memberof Popper.Utils
-     * @argument {Object} data - The data object generated by `update` method
-     * @argument {Boolean} shouldRound - If the offsets should be rounded at all
-     * @returns {Object} The popper's position offsets rounded
-     *
-     * The tale of pixel-perfect positioning. It's still not 100% perfect, but as
-     * good as it can be within reason.
-     * Discussion here: https://github.com/FezVrasta/popper.js/pull/715
-     *
-     * Low DPI screens cause a popper to be blurry if not using full pixels (Safari
-     * as well on High DPI screens).
-     *
-     * Firefox prefers no rounding for positioning and does not have blurriness on
-     * high DPI screens.
-     *
-     * Only horizontal placement and left/right values need to be considered.
-     */
-    function getRoundedOffsets(data, shouldRound) {
-      var _data$offsets = data.offsets,
-          popper = _data$offsets.popper,
-          reference = _data$offsets.reference;
-      var round = Math.round,
-          floor = Math.floor;
-
-      var noRound = function noRound(v) {
-        return v;
-      };
-
-      var referenceWidth = round(reference.width);
-      var popperWidth = round(popper.width);
-
-      var isVertical = ['left', 'right'].indexOf(data.placement) !== -1;
-      var isVariation = data.placement.indexOf('-') !== -1;
-      var sameWidthParity = referenceWidth % 2 === popperWidth % 2;
-      var bothOddWidth = referenceWidth % 2 === 1 && popperWidth % 2 === 1;
-
-      var horizontalToInteger = !shouldRound ? noRound : isVertical || isVariation || sameWidthParity ? round : floor;
-      var verticalToInteger = !shouldRound ? noRound : round;
-
-      return {
-        left: horizontalToInteger(bothOddWidth && !isVariation && shouldRound ? popper.left - 1 : popper.left),
-        top: verticalToInteger(popper.top),
-        bottom: verticalToInteger(popper.bottom),
-        right: horizontalToInteger(popper.right)
-      };
-    }
-
-    var isFirefox = isBrowser && /Firefox/i.test(navigator.userAgent);
-
-    /**
-     * @function
      * @memberof Modifiers
      * @argument {Object} data - The data object generated by `update` method
      * @argument {Object} options - Modifiers configuration and options
@@ -4880,7 +5402,15 @@
         position: popper.position
       };
 
-      var offsets = getRoundedOffsets(data, window.devicePixelRatio < 2 || !isFirefox);
+      // Avoid blurry text by using full pixel integers.
+      // For pixel-perfect positioning, top/bottom prefers rounded
+      // values, while left/right prefers floored values.
+      var offsets = {
+        left: Math.floor(popper.left),
+        top: Math.round(popper.top),
+        bottom: Math.round(popper.bottom),
+        right: Math.floor(popper.right)
+      };
 
       var sideA = x === 'bottom' ? 'top' : 'bottom';
       var sideB = y === 'right' ? 'left' : 'right';
@@ -5198,14 +5728,7 @@
 
         // flip the variation if required
         var isVertical = ['top', 'bottom'].indexOf(placement) !== -1;
-
-        // flips variation if reference element overflows boundaries
-        var flippedVariationByRef = !!options.flipVariations && (isVertical && variation === 'start' && overflowsLeft || isVertical && variation === 'end' && overflowsRight || !isVertical && variation === 'start' && overflowsTop || !isVertical && variation === 'end' && overflowsBottom);
-
-        // flips variation if popper content overflows boundaries
-        var flippedVariationByContent = !!options.flipVariationsByContent && (isVertical && variation === 'start' && overflowsRight || isVertical && variation === 'end' && overflowsLeft || !isVertical && variation === 'start' && overflowsBottom || !isVertical && variation === 'end' && overflowsTop);
-
-        var flippedVariation = flippedVariationByRef || flippedVariationByContent;
+        var flippedVariation = !!options.flipVariations && (isVertical && variation === 'start' && overflowsLeft || isVertical && variation === 'end' && overflowsRight || !isVertical && variation === 'start' && overflowsTop || !isVertical && variation === 'end' && overflowsBottom);
 
         if (overlapsRef || overflowsBoundaries || flippedVariation) {
           // this boolean to detect any flip loop
@@ -5812,23 +6335,7 @@
          * The popper will never be placed outside of the defined boundaries
          * (except if `keepTogether` is enabled)
          */
-        boundariesElement: 'viewport',
-        /**
-         * @prop {Boolean} flipVariations=false
-         * The popper will switch placement variation between `-start` and `-end` when
-         * the reference element overlaps its boundaries.
-         *
-         * The original placement should have a set variation.
-         */
-        flipVariations: false,
-        /**
-         * @prop {Boolean} flipVariationsByContent=false
-         * The popper will switch placement variation between `-start` and `-end` when
-         * the popper element overlaps its reference boundaries.
-         *
-         * The original placement should have a set variation.
-         */
-        flipVariationsByContent: false
+        boundariesElement: 'viewport'
       },
 
       /**
@@ -6045,8 +6552,8 @@
       /**
        * Creates a new Popper.js instance.
        * @class Popper
-       * @param {Element|referenceObject} reference - The reference element used to position the popper
-       * @param {Element} popper - The HTML / XML element used as the popper
+       * @param {HTMLElement|referenceObject} reference - The reference element used to position the popper
+       * @param {HTMLElement} popper - The HTML element used as the popper
        * @param {Object} options - Your custom options to override the ones defined in [Defaults](#defaults)
        * @return {Object} instance - The generated Popper.js instance
        */
@@ -6618,8 +7125,8 @@
     };
 
     /* script */
-    var __vue_script__$l = script$l;
-
+                var __vue_script__$l = script$l;
+                
     /* template */
     var __vue_render__$l = function() {
       var _vm = this;
@@ -6763,18 +7270,122 @@
       var __vue_module_identifier__$l = undefined;
       /* functional template */
       var __vue_is_functional_template__$l = false;
+      /* component normalizer */
+      function __vue_normalize__$l(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/dropdown/Dropdown.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        {
+          var hook;
+          if (style) {
+            hook = function(context) {
+              style.call(this, createInjector(context));
+            };
+          }
+
+          if (hook !== undefined) {
+            if (component.functional) {
+              // register for functional component in vue file
+              var originalRender = component.render;
+              component.render = function renderWithStyleInjection(h, context) {
+                hook.call(context);
+                return originalRender(h, context)
+              };
+            } else {
+              // inject component registration as beforeCreate hook
+              var existing = component.beforeCreate;
+              component.beforeCreate = existing ? [].concat(existing, hook) : [hook];
+            }
+          }
+        }
+
+        return component
+      }
+      /* style inject */
+      function __vue_create_injector__$3() {
+        var head = document.head || document.getElementsByTagName('head')[0];
+        var styles = __vue_create_injector__$3.styles || (__vue_create_injector__$3.styles = {});
+        var isOldIE =
+          typeof navigator !== 'undefined' &&
+          /msie [6-9]\\b/.test(navigator.userAgent.toLowerCase());
+
+        return function addStyle(id, css) {
+          if (document.querySelector('style[data-vue-ssr-id~="' + id + '"]')) { return } // SSR styles are present.
+
+          var group = isOldIE ? css.media || 'default' : id;
+          var style = styles[group] || (styles[group] = { ids: [], parts: [], element: undefined });
+
+          if (!style.ids.includes(id)) {
+            var code = css.source;
+            var index = style.ids.length;
+
+            style.ids.push(id);
+
+            if (isOldIE) {
+              style.element = style.element || document.querySelector('style[data-group=' + group + ']');
+            }
+
+            if (!style.element) {
+              var el = style.element = document.createElement('style');
+              el.type = 'text/css';
+
+              if (css.media) { el.setAttribute('media', css.media); }
+              if (isOldIE) {
+                el.setAttribute('data-group', group);
+                el.setAttribute('data-next-index', '0');
+              }
+
+              head.appendChild(el);
+            }
+
+            if (isOldIE) {
+              index = parseInt(style.element.getAttribute('data-next-index'));
+              style.element.setAttribute('data-next-index', index + 1);
+            }
+
+            if (style.element.styleSheet) {
+              style.parts.push(code);
+              style.element.styleSheet.cssText = style.parts
+                .filter(Boolean)
+                .join('\n');
+            } else {
+              var textNode = document.createTextNode(code);
+              var nodes = style.element.childNodes;
+              if (nodes[index]) { style.element.removeChild(nodes[index]); }
+              if (nodes.length) { style.element.insertBefore(textNode, nodes[index]); }
+              else { style.element.appendChild(textNode); }
+            }
+          }
+        }
+      }
       /* style inject SSR */
       
 
       
-      var dDropdown = normalizeComponent_1(
+      var dDropdown = __vue_normalize__$l(
         { render: __vue_render__$l, staticRenderFns: __vue_staticRenderFns__$l },
         __vue_inject_styles__$l,
         __vue_script__$l,
         __vue_scope_id__$l,
         __vue_is_functional_template__$l,
         __vue_module_identifier__$l,
-        browser,
+        __vue_create_injector__$3,
         undefined
       );
 
@@ -6789,8 +7400,8 @@
     };
 
     /* script */
-    var __vue_script__$m = script$m;
-
+                var __vue_script__$m = script$m;
+                
     /* template */
     var __vue_render__$m = function() {
       var _vm = this;
@@ -6823,18 +7434,122 @@
       var __vue_module_identifier__$m = undefined;
       /* functional template */
       var __vue_is_functional_template__$m = false;
+      /* component normalizer */
+      function __vue_normalize__$m(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/dropdown/DropdownItem.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        {
+          var hook;
+          if (style) {
+            hook = function(context) {
+              style.call(this, createInjector(context));
+            };
+          }
+
+          if (hook !== undefined) {
+            if (component.functional) {
+              // register for functional component in vue file
+              var originalRender = component.render;
+              component.render = function renderWithStyleInjection(h, context) {
+                hook.call(context);
+                return originalRender(h, context)
+              };
+            } else {
+              // inject component registration as beforeCreate hook
+              var existing = component.beforeCreate;
+              component.beforeCreate = existing ? [].concat(existing, hook) : [hook];
+            }
+          }
+        }
+
+        return component
+      }
+      /* style inject */
+      function __vue_create_injector__$4() {
+        var head = document.head || document.getElementsByTagName('head')[0];
+        var styles = __vue_create_injector__$4.styles || (__vue_create_injector__$4.styles = {});
+        var isOldIE =
+          typeof navigator !== 'undefined' &&
+          /msie [6-9]\\b/.test(navigator.userAgent.toLowerCase());
+
+        return function addStyle(id, css) {
+          if (document.querySelector('style[data-vue-ssr-id~="' + id + '"]')) { return } // SSR styles are present.
+
+          var group = isOldIE ? css.media || 'default' : id;
+          var style = styles[group] || (styles[group] = { ids: [], parts: [], element: undefined });
+
+          if (!style.ids.includes(id)) {
+            var code = css.source;
+            var index = style.ids.length;
+
+            style.ids.push(id);
+
+            if (isOldIE) {
+              style.element = style.element || document.querySelector('style[data-group=' + group + ']');
+            }
+
+            if (!style.element) {
+              var el = style.element = document.createElement('style');
+              el.type = 'text/css';
+
+              if (css.media) { el.setAttribute('media', css.media); }
+              if (isOldIE) {
+                el.setAttribute('data-group', group);
+                el.setAttribute('data-next-index', '0');
+              }
+
+              head.appendChild(el);
+            }
+
+            if (isOldIE) {
+              index = parseInt(style.element.getAttribute('data-next-index'));
+              style.element.setAttribute('data-next-index', index + 1);
+            }
+
+            if (style.element.styleSheet) {
+              style.parts.push(code);
+              style.element.styleSheet.cssText = style.parts
+                .filter(Boolean)
+                .join('\n');
+            } else {
+              var textNode = document.createTextNode(code);
+              var nodes = style.element.childNodes;
+              if (nodes[index]) { style.element.removeChild(nodes[index]); }
+              if (nodes.length) { style.element.insertBefore(textNode, nodes[index]); }
+              else { style.element.appendChild(textNode); }
+            }
+          }
+        }
+      }
       /* style inject SSR */
       
 
       
-      var dDropdownItem = normalizeComponent_1(
+      var dDropdownItem = __vue_normalize__$m(
         { render: __vue_render__$m, staticRenderFns: __vue_staticRenderFns__$m },
         __vue_inject_styles__$m,
         __vue_script__$m,
         __vue_scope_id__$m,
         __vue_is_functional_template__$m,
         __vue_module_identifier__$m,
-        browser,
+        __vue_create_injector__$4,
         undefined
       );
 
@@ -6868,8 +7583,8 @@
     };
 
     /* script */
-    var __vue_script__$n = script$n;
-
+                var __vue_script__$n = script$n;
+                
     /* template */
     var __vue_render__$n = function() {
       var _vm = this;
@@ -6893,13 +7608,36 @@
       var __vue_module_identifier__$n = undefined;
       /* functional template */
       var __vue_is_functional_template__$n = false;
+      /* component normalizer */
+      function __vue_normalize__$n(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/dropdown/DropdownHeader.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dDropdownHeader = normalizeComponent_1(
+      var dDropdownHeader = __vue_normalize__$n(
         { render: __vue_render__$n, staticRenderFns: __vue_staticRenderFns__$n },
         __vue_inject_styles__$n,
         __vue_script__$n,
@@ -6933,8 +7671,8 @@
     };
 
     /* script */
-    var __vue_script__$o = script$o;
-
+                var __vue_script__$o = script$o;
+                
     /* template */
     var __vue_render__$o = function() {
       var _vm = this;
@@ -6962,13 +7700,36 @@
       var __vue_module_identifier__$o = undefined;
       /* functional template */
       var __vue_is_functional_template__$o = false;
+      /* component normalizer */
+      function __vue_normalize__$o(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/dropdown/DropdownDivider.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dDropdownDivider = normalizeComponent_1(
+      var dDropdownDivider = __vue_normalize__$o(
         { render: __vue_render__$o, staticRenderFns: __vue_staticRenderFns__$o },
         __vue_inject_styles__$o,
         __vue_script__$o,
@@ -7026,8 +7787,8 @@
     };
 
     /* script */
-    var __vue_script__$p = script$p;
-
+                var __vue_script__$p = script$p;
+                
     /* template */
     var __vue_render__$p = function() {
       var _vm = this;
@@ -7066,13 +7827,36 @@
       var __vue_module_identifier__$p = undefined;
       /* functional template */
       var __vue_is_functional_template__$p = false;
+      /* component normalizer */
+      function __vue_normalize__$p(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/embed/Embed.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dEmbed = normalizeComponent_1(
+      var dEmbed = __vue_normalize__$p(
         { render: __vue_render__$p, staticRenderFns: __vue_staticRenderFns__$p },
         __vue_inject_styles__$p,
         __vue_script__$p,
@@ -7136,8 +7920,8 @@
     };
 
     /* script */
-    var __vue_script__$q = script$q;
-
+                var __vue_script__$q = script$q;
+                
     /* template */
     var __vue_render__$q = function() {
       var _vm = this;
@@ -7175,13 +7959,36 @@
       var __vue_module_identifier__$q = undefined;
       /* functional template */
       var __vue_is_functional_template__$q = false;
+      /* component normalizer */
+      function __vue_normalize__$q(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/form/Form.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dForm = normalizeComponent_1(
+      var dForm = __vue_normalize__$q(
         { render: __vue_render__$q, staticRenderFns: __vue_staticRenderFns__$q },
         __vue_inject_styles__$q,
         __vue_script__$q,
@@ -7213,8 +8020,8 @@
     };
 
     /* script */
-    var __vue_script__$r = script$r;
-
+                var __vue_script__$r = script$r;
+                
     /* template */
     var __vue_render__$r = function() {
       var _vm = this;
@@ -7238,13 +8045,36 @@
       var __vue_module_identifier__$r = undefined;
       /* functional template */
       var __vue_is_functional_template__$r = false;
+      /* component normalizer */
+      function __vue_normalize__$r(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/form/FormRow.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dFormRow = normalizeComponent_1(
+      var dFormRow = __vue_normalize__$r(
         { render: __vue_render__$r, staticRenderFns: __vue_staticRenderFns__$r },
         __vue_inject_styles__$r,
         __vue_script__$r,
@@ -7286,8 +8116,8 @@
     };
 
     /* script */
-    var __vue_script__$s = script$s;
-
+                var __vue_script__$s = script$s;
+                
     /* template */
     var __vue_render__$s = function() {
       var _vm = this;
@@ -7317,13 +8147,36 @@
       var __vue_module_identifier__$s = undefined;
       /* functional template */
       var __vue_is_functional_template__$s = false;
+      /* component normalizer */
+      function __vue_normalize__$s(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/form/FormText.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dFormText = normalizeComponent_1(
+      var dFormText = __vue_normalize__$s(
         { render: __vue_render__$s, staticRenderFns: __vue_staticRenderFns__$s },
         __vue_inject_styles__$s,
         __vue_script__$s,
@@ -7374,8 +8227,8 @@
     };
 
     /* script */
-    var __vue_script__$t = script$t;
-
+                var __vue_script__$t = script$t;
+                
     /* template */
     var __vue_render__$t = function() {
       var _vm = this;
@@ -7402,13 +8255,36 @@
       var __vue_module_identifier__$t = undefined;
       /* functional template */
       var __vue_is_functional_template__$t = false;
+      /* component normalizer */
+      function __vue_normalize__$t(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/form/FormFeedback.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dFormFeedback = normalizeComponent_1(
+      var dFormFeedback = __vue_normalize__$t(
         { render: __vue_render__$t, staticRenderFns: __vue_staticRenderFns__$t },
         __vue_inject_styles__$t,
         __vue_script__$t,
@@ -7459,8 +8335,8 @@
     };
 
     /* script */
-    var __vue_script__$u = script$u;
-
+                var __vue_script__$u = script$u;
+                
     /* template */
     var __vue_render__$u = function() {
       var _vm = this;
@@ -7488,13 +8364,36 @@
       var __vue_module_identifier__$u = undefined;
       /* functional template */
       var __vue_is_functional_template__$u = false;
+      /* component normalizer */
+      function __vue_normalize__$u(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/form/FormValidFeedback.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dFormValidFeedback = normalizeComponent_1(
+      var dFormValidFeedback = __vue_normalize__$u(
         { render: __vue_render__$u, staticRenderFns: __vue_staticRenderFns__$u },
         __vue_inject_styles__$u,
         __vue_script__$u,
@@ -7545,8 +8444,8 @@
     };
 
     /* script */
-    var __vue_script__$v = script$v;
-
+                var __vue_script__$v = script$v;
+                
     /* template */
     var __vue_render__$v = function() {
       var _vm = this;
@@ -7574,13 +8473,36 @@
       var __vue_module_identifier__$v = undefined;
       /* functional template */
       var __vue_is_functional_template__$v = false;
+      /* component normalizer */
+      function __vue_normalize__$v(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/form/FormInvalidFeedback.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dFormInvalidFeedback = normalizeComponent_1(
+      var dFormInvalidFeedback = __vue_normalize__$v(
         { render: __vue_render__$v, staticRenderFns: __vue_staticRenderFns__$v },
         __vue_inject_styles__$v,
         __vue_script__$v,
@@ -7781,8 +8703,8 @@
     };
 
     /* script */
-    var __vue_script__$w = script$w;
-
+                var __vue_script__$w = script$w;
+                
     /* template */
     var __vue_render__$w = function() {
       var _vm = this;
@@ -7879,13 +8801,36 @@
       var __vue_module_identifier__$w = undefined;
       /* functional template */
       var __vue_is_functional_template__$w = false;
+      /* component normalizer */
+      function __vue_normalize__$w(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/form-checkbox/FormCheckbox.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dFormCheckbox = normalizeComponent_1(
+      var dFormCheckbox = __vue_normalize__$w(
         { render: __vue_render__$w, staticRenderFns: __vue_staticRenderFns__$w },
         __vue_inject_styles__$w,
         __vue_script__$w,
@@ -8060,8 +9005,8 @@
     };
 
     /* script */
-    var __vue_script__$x = script$x;
-
+                var __vue_script__$x = script$x;
+                
     /* template */
     var __vue_render__$x = function() {
       var _vm = this;
@@ -8110,13 +9055,36 @@
       var __vue_module_identifier__$x = undefined;
       /* functional template */
       var __vue_is_functional_template__$x = false;
+      /* component normalizer */
+      function __vue_normalize__$x(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/form-input/FormInput.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dFormInput = normalizeComponent_1(
+      var dFormInput = __vue_normalize__$x(
         { render: __vue_render__$x, staticRenderFns: __vue_staticRenderFns__$x },
         __vue_inject_styles__$x,
         __vue_script__$x,
@@ -8269,8 +9237,8 @@
     };
 
     /* script */
-    var __vue_script__$y = script$y;
-
+                var __vue_script__$y = script$y;
+                
     /* template */
     var __vue_render__$y = function() {
       var _vm = this;
@@ -8346,13 +9314,36 @@
       var __vue_module_identifier__$y = undefined;
       /* functional template */
       var __vue_is_functional_template__$y = false;
+      /* component normalizer */
+      function __vue_normalize__$y(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/form-radio/FormRadio.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dFormRadio = normalizeComponent_1(
+      var dFormRadio = __vue_normalize__$y(
         { render: __vue_render__$y, staticRenderFns: __vue_staticRenderFns__$y },
         __vue_inject_styles__$y,
         __vue_script__$y,
@@ -8586,8 +9577,8 @@
     };
 
     /* script */
-    var __vue_script__$z = script$z;
-
+                var __vue_script__$z = script$z;
+                
     /* template */
     var __vue_render__$z = function() {
       var _vm = this;
@@ -8673,18 +9664,122 @@
       var __vue_module_identifier__$z = undefined;
       /* functional template */
       var __vue_is_functional_template__$z = false;
+      /* component normalizer */
+      function __vue_normalize__$z(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/form-select/FormSelect.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        {
+          var hook;
+          if (style) {
+            hook = function(context) {
+              style.call(this, createInjector(context));
+            };
+          }
+
+          if (hook !== undefined) {
+            if (component.functional) {
+              // register for functional component in vue file
+              var originalRender = component.render;
+              component.render = function renderWithStyleInjection(h, context) {
+                hook.call(context);
+                return originalRender(h, context)
+              };
+            } else {
+              // inject component registration as beforeCreate hook
+              var existing = component.beforeCreate;
+              component.beforeCreate = existing ? [].concat(existing, hook) : [hook];
+            }
+          }
+        }
+
+        return component
+      }
+      /* style inject */
+      function __vue_create_injector__$5() {
+        var head = document.head || document.getElementsByTagName('head')[0];
+        var styles = __vue_create_injector__$5.styles || (__vue_create_injector__$5.styles = {});
+        var isOldIE =
+          typeof navigator !== 'undefined' &&
+          /msie [6-9]\\b/.test(navigator.userAgent.toLowerCase());
+
+        return function addStyle(id, css) {
+          if (document.querySelector('style[data-vue-ssr-id~="' + id + '"]')) { return } // SSR styles are present.
+
+          var group = isOldIE ? css.media || 'default' : id;
+          var style = styles[group] || (styles[group] = { ids: [], parts: [], element: undefined });
+
+          if (!style.ids.includes(id)) {
+            var code = css.source;
+            var index = style.ids.length;
+
+            style.ids.push(id);
+
+            if (isOldIE) {
+              style.element = style.element || document.querySelector('style[data-group=' + group + ']');
+            }
+
+            if (!style.element) {
+              var el = style.element = document.createElement('style');
+              el.type = 'text/css';
+
+              if (css.media) { el.setAttribute('media', css.media); }
+              if (isOldIE) {
+                el.setAttribute('data-group', group);
+                el.setAttribute('data-next-index', '0');
+              }
+
+              head.appendChild(el);
+            }
+
+            if (isOldIE) {
+              index = parseInt(style.element.getAttribute('data-next-index'));
+              style.element.setAttribute('data-next-index', index + 1);
+            }
+
+            if (style.element.styleSheet) {
+              style.parts.push(code);
+              style.element.styleSheet.cssText = style.parts
+                .filter(Boolean)
+                .join('\n');
+            } else {
+              var textNode = document.createTextNode(code);
+              var nodes = style.element.childNodes;
+              if (nodes[index]) { style.element.removeChild(nodes[index]); }
+              if (nodes.length) { style.element.insertBefore(textNode, nodes[index]); }
+              else { style.element.appendChild(textNode); }
+            }
+          }
+        }
+      }
       /* style inject SSR */
       
 
       
-      var dFormSelect = normalizeComponent_1(
+      var dFormSelect = __vue_normalize__$z(
         { render: __vue_render__$z, staticRenderFns: __vue_staticRenderFns__$z },
         __vue_inject_styles__$z,
         __vue_script__$z,
         __vue_scope_id__$z,
         __vue_is_functional_template__$z,
         __vue_module_identifier__$z,
-        browser,
+        __vue_create_injector__$5,
         undefined
       );
 
@@ -8926,8 +10021,8 @@
     };
 
     /* script */
-    var __vue_script__$A = script$A;
-
+                var __vue_script__$A = script$A;
+                
     /* template */
     var __vue_render__$A = function() {
       var _vm = this;
@@ -8969,13 +10064,36 @@
       var __vue_module_identifier__$A = undefined;
       /* functional template */
       var __vue_is_functional_template__$A = false;
+      /* component normalizer */
+      function __vue_normalize__$A(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/form-textarea/FormTextarea.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dFormTextarea = normalizeComponent_1(
+      var dFormTextarea = __vue_normalize__$A(
         { render: __vue_render__$A, staticRenderFns: __vue_staticRenderFns__$A },
         __vue_inject_styles__$A,
         __vue_script__$A,
@@ -9121,8 +10239,8 @@
     };
 
     /* script */
-    var __vue_script__$B = script$B;
-
+                var __vue_script__$B = script$B;
+                
     /* template */
     var __vue_render__$B = function() {
       var _vm = this;
@@ -9156,13 +10274,36 @@
       var __vue_module_identifier__$B = undefined;
       /* functional template */
       var __vue_is_functional_template__$B = false;
+      /* component normalizer */
+      function __vue_normalize__$B(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/image/Image.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dImg = normalizeComponent_1(
+      var dImg = __vue_normalize__$B(
         { render: __vue_render__$B, staticRenderFns: __vue_staticRenderFns__$B },
         __vue_inject_styles__$B,
         __vue_script__$B,
@@ -9207,8 +10348,8 @@
     };
 
     /* script */
-    var __vue_script__$C = script$C;
-
+                var __vue_script__$C = script$C;
+                
     /* template */
     var __vue_render__$C = function() {
       var _vm = this;
@@ -9232,13 +10373,36 @@
       var __vue_module_identifier__$C = undefined;
       /* functional template */
       var __vue_is_functional_template__$C = false;
+      /* component normalizer */
+      function __vue_normalize__$C(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/input-group/InputGroupText.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var InputGroupText = normalizeComponent_1(
+      var InputGroupText = __vue_normalize__$C(
         { render: __vue_render__$C, staticRenderFns: __vue_staticRenderFns__$C },
         __vue_inject_styles__$C,
         __vue_script__$C,
@@ -9296,8 +10460,8 @@
     };
 
     /* script */
-    var __vue_script__$D = script$D;
-
+                var __vue_script__$D = script$D;
+                
     /* template */
     var __vue_render__$D = function() {
       var _vm = this;
@@ -9329,13 +10493,36 @@
       var __vue_module_identifier__$D = undefined;
       /* functional template */
       var __vue_is_functional_template__$D = false;
+      /* component normalizer */
+      function __vue_normalize__$D(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/input-group/InputGroupAddon.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var InputGroupAddon = normalizeComponent_1(
+      var InputGroupAddon = __vue_normalize__$D(
         { render: __vue_render__$D, staticRenderFns: __vue_staticRenderFns__$D },
         __vue_inject_styles__$D,
         __vue_script__$D,
@@ -9410,8 +10597,8 @@
     };
 
     /* script */
-    var __vue_script__$E = script$E;
-
+                var __vue_script__$E = script$E;
+                
     /* template */
     var __vue_render__$E = function() {
       var _vm = this;
@@ -9483,18 +10670,122 @@
       var __vue_module_identifier__$E = undefined;
       /* functional template */
       var __vue_is_functional_template__$E = false;
+      /* component normalizer */
+      function __vue_normalize__$E(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/input-group/InputGroup.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        {
+          var hook;
+          if (style) {
+            hook = function(context) {
+              style.call(this, createInjector(context));
+            };
+          }
+
+          if (hook !== undefined) {
+            if (component.functional) {
+              // register for functional component in vue file
+              var originalRender = component.render;
+              component.render = function renderWithStyleInjection(h, context) {
+                hook.call(context);
+                return originalRender(h, context)
+              };
+            } else {
+              // inject component registration as beforeCreate hook
+              var existing = component.beforeCreate;
+              component.beforeCreate = existing ? [].concat(existing, hook) : [hook];
+            }
+          }
+        }
+
+        return component
+      }
+      /* style inject */
+      function __vue_create_injector__$6() {
+        var head = document.head || document.getElementsByTagName('head')[0];
+        var styles = __vue_create_injector__$6.styles || (__vue_create_injector__$6.styles = {});
+        var isOldIE =
+          typeof navigator !== 'undefined' &&
+          /msie [6-9]\\b/.test(navigator.userAgent.toLowerCase());
+
+        return function addStyle(id, css) {
+          if (document.querySelector('style[data-vue-ssr-id~="' + id + '"]')) { return } // SSR styles are present.
+
+          var group = isOldIE ? css.media || 'default' : id;
+          var style = styles[group] || (styles[group] = { ids: [], parts: [], element: undefined });
+
+          if (!style.ids.includes(id)) {
+            var code = css.source;
+            var index = style.ids.length;
+
+            style.ids.push(id);
+
+            if (isOldIE) {
+              style.element = style.element || document.querySelector('style[data-group=' + group + ']');
+            }
+
+            if (!style.element) {
+              var el = style.element = document.createElement('style');
+              el.type = 'text/css';
+
+              if (css.media) { el.setAttribute('media', css.media); }
+              if (isOldIE) {
+                el.setAttribute('data-group', group);
+                el.setAttribute('data-next-index', '0');
+              }
+
+              head.appendChild(el);
+            }
+
+            if (isOldIE) {
+              index = parseInt(style.element.getAttribute('data-next-index'));
+              style.element.setAttribute('data-next-index', index + 1);
+            }
+
+            if (style.element.styleSheet) {
+              style.parts.push(code);
+              style.element.styleSheet.cssText = style.parts
+                .filter(Boolean)
+                .join('\n');
+            } else {
+              var textNode = document.createTextNode(code);
+              var nodes = style.element.childNodes;
+              if (nodes[index]) { style.element.removeChild(nodes[index]); }
+              if (nodes.length) { style.element.insertBefore(textNode, nodes[index]); }
+              else { style.element.appendChild(textNode); }
+            }
+          }
+        }
+      }
       /* style inject SSR */
       
 
       
-      var dInputGroup = normalizeComponent_1(
+      var dInputGroup = __vue_normalize__$E(
         { render: __vue_render__$E, staticRenderFns: __vue_staticRenderFns__$E },
         __vue_inject_styles__$E,
         __vue_script__$E,
         __vue_scope_id__$E,
         __vue_is_functional_template__$E,
         __vue_module_identifier__$E,
-        browser,
+        __vue_create_injector__$6,
         undefined
       );
 
@@ -9555,8 +10846,8 @@
     };
 
     /* script */
-    var __vue_script__$F = script$F;
-
+                var __vue_script__$F = script$F;
+                
     /* template */
     var __vue_render__$F = function() {
       var _vm = this;
@@ -9583,13 +10874,36 @@
       var __vue_module_identifier__$F = undefined;
       /* functional template */
       var __vue_is_functional_template__$F = false;
+      /* component normalizer */
+      function __vue_normalize__$F(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/list-group/ListGroup.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dListGroup = normalizeComponent_1(
+      var dListGroup = __vue_normalize__$F(
         { render: __vue_render__$F, staticRenderFns: __vue_staticRenderFns__$F },
         __vue_inject_styles__$F,
         __vue_script__$F,
@@ -9666,8 +10980,8 @@
     };
 
     /* script */
-    var __vue_script__$G = script$G;
-
+                var __vue_script__$G = script$G;
+                
     /* template */
     var __vue_render__$G = function() {
       var _vm = this;
@@ -9701,13 +11015,36 @@
       var __vue_module_identifier__$G = undefined;
       /* functional template */
       var __vue_is_functional_template__$G = false;
+      /* component normalizer */
+      function __vue_normalize__$G(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/list-group/ListGroupItem.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dListGroupItem = normalizeComponent_1(
+      var dListGroupItem = __vue_normalize__$G(
         { render: __vue_render__$G, staticRenderFns: __vue_staticRenderFns__$G },
         __vue_inject_styles__$G,
         __vue_script__$G,
@@ -9781,6 +11118,13 @@
             }
 
             /**
+             * Do not close modals when <body> contains `js-not-close-modals-on-backdrop-click` CSS class
+             */
+            if (document.body.classList.contains('js-not-close-modals-on-backdrop-click')) {
+                return;
+            }
+
+            /**
              * @event close
              *
              * Triggered when the modal is closed.
@@ -9798,8 +11142,8 @@
     };
 
     /* script */
-    var __vue_script__$H = script$H;
-
+                var __vue_script__$H = script$H;
+                
     /* template */
     var __vue_render__$H = function() {
       var _vm = this;
@@ -9855,27 +11199,131 @@
       /* style */
       var __vue_inject_styles__$H = function (inject) {
         if (!inject) { return }
-        inject("data-v-30bb0787_0", { source: "\n.modal[data-v-30bb0787] {\n    display: block;\n    background-color: rgba(0,0,0,0.5);\n    transition: .3s;\n    overflow-y: auto;\n}\n.modal-dialog[data-v-30bb0787] {\n    transition: .3s;\n}\n.modal--no-backdrop[data-v-30bb0787] {\n    background: none;\n    pointer-events: none;\n}\n.fade-enter[data-v-30bb0787] {\n    transform: translate(0,0);\n    opacity: 1;\n}\n.fade-leave-active[data-v-30bb0787] {\n    transform: translate(0,0);\n    opacity: 1;\n}\n.fade-enter[data-v-30bb0787], .fade-leave-active[data-v-30bb0787] {\n    opacity: 0;\n}\n.fade-enter .modal-dialog[data-v-30bb0787],\n.fade-leave-active .modal-dialog[data-v-30bb0787] {\n    -webkit-transform: translate(0,-25%);\n    transform: translate(0,-25%);\n}\n", map: {"version":3,"sources":["/Users/dziudek/Desktop/Github/shards-vue/src/components/modal/Modal.vue"],"names":[],"mappings":";AA4FA;IACA,cAAA;IACA,iCAAA;IACA,eAAA;IACA,gBAAA;AACA;AAEA;IACA,eAAA;AACA;AAEA;IACA,gBAAA;IACA,oBAAA;AACA;AAEA;IACA,yBAAA;IACA,UAAA;AACA;AAEA;IACA,yBAAA;IACA,UAAA;AACA;AAEA;IACA,UAAA;AACA;AAEA;;IAEA,oCAAA;IACA,4BAAA;AACA","file":"Modal.vue","sourcesContent":["<template>\n  <transition name=\"fade\">\n    <component :is=\"tag\"\n        :class=\"[\n            'modal',\n            this.noBackdrop ? 'modal--no-backdrop' : ''\n        ]\">\n      <div :class=\"[\n            'modal-dialog',\n            size ? `modal-${size}` : '',\n            centered ? `modal-dialog-centered` : '',\n        ]\"\n        role=\"document\"\n        v-on-clickaway=\"away\">\n        <div class=\"modal-content\">\n            <slot />\n        </div>\n      </div>\n    </component>\n  </transition>\n</template>\n\n<script>\nimport { mixin as clickAwayMixin } from 'vue-clickaway';\nimport { MODAL_EVENTS } from '../../utils/constants';\n\nexport default {\n    name: 'd-modal',\n    mixins: [clickAwayMixin],\n    props: {\n        /**\n         * The component tag.\n         */\n        tag: {\n            type: String,\n            default: \"div\"\n        },\n        /**\n         * The size (sm, lg).\n         */\n        size: {\n            type: String,\n            default: null,\n            validator: v => ['sm', 'lg'].includes(v)\n        },\n        /**\n         * Hides the backdrop overlay.\n         */\n        noBackdrop: {\n            type: Boolean,\n            default: false\n        },\n        /**\n         * Whether it is centered, or not.\n         */\n        centered: {\n            type: Boolean,\n            default: false\n        }\n    },\n  methods: {\n    away() {\n        if (this.noBackdrop) {\n            return;\n        }\n\n        /**\n         * Do not close modals when SWAL alert is opened over\n         */\n        if (document.querySelector('.swal2-container')) {\n            return;\n        }\n\n        /**\n         * @event close\n         *\n         * Triggered when the modal is closed.\n         */\n        this.$emit('close');\n\n        /**\n         * @event hidden\n         *\n         * Triggered when the modal is hidden.\n         */\n        this.$root.$emit(MODAL_EVENTS.HIDDEN)\n    }\n  },\n};\n</script>\n\n<style scoped>\n.modal {\n    display: block;\n    background-color: rgba(0,0,0,0.5);\n    transition: .3s;\n    overflow-y: auto;\n}\n\n.modal-dialog {\n    transition: .3s;\n}\n\n.modal--no-backdrop {\n    background: none;\n    pointer-events: none;\n}\n\n.fade-enter {\n    transform: translate(0,0);\n    opacity: 1;\n}\n\n.fade-leave-active {\n    transform: translate(0,0);\n    opacity: 1;\n}\n\n.fade-enter, .fade-leave-active {\n    opacity: 0;\n}\n\n.fade-enter .modal-dialog,\n.fade-leave-active .modal-dialog {\n    -webkit-transform: translate(0,-25%);\n    transform: translate(0,-25%);\n}\n</style>\n"]}, media: undefined });
+        inject("data-v-32a452ad_0", { source: "\n.modal[data-v-32a452ad] {\n    display: block;\n    background-color: rgba(0,0,0,0.5);\n    transition: .3s;\n    overflow-y: auto;\n}\n.modal-dialog[data-v-32a452ad] {\n    transition: .3s;\n}\n.modal--no-backdrop[data-v-32a452ad] {\n    background: none;\n    pointer-events: none;\n}\n.fade-enter[data-v-32a452ad] {\n    transform: translate(0,0);\n    opacity: 1;\n}\n.fade-leave-active[data-v-32a452ad] {\n    transform: translate(0,0);\n    opacity: 1;\n}\n.fade-enter[data-v-32a452ad], .fade-leave-active[data-v-32a452ad] {\n    opacity: 0;\n}\n.fade-enter .modal-dialog[data-v-32a452ad],\n.fade-leave-active .modal-dialog[data-v-32a452ad] {\n    -webkit-transform: translate(0,-25%);\n    transform: translate(0,-25%);\n}\n", map: {"version":3,"sources":["/Users/dziudek/Desktop/Github/shards-vue/src/components/modal/Modal.vue"],"names":[],"mappings":";AAmGA;IACA,cAAA;IACA,iCAAA;IACA,eAAA;IACA,gBAAA;AACA;AAEA;IACA,eAAA;AACA;AAEA;IACA,gBAAA;IACA,oBAAA;AACA;AAEA;IACA,yBAAA;IACA,UAAA;AACA;AAEA;IACA,yBAAA;IACA,UAAA;AACA;AAEA;IACA,UAAA;AACA;AAEA;;IAEA,oCAAA;IACA,4BAAA;AACA","file":"Modal.vue","sourcesContent":["<template>\n  <transition name=\"fade\">\n    <component :is=\"tag\"\n        :class=\"[\n            'modal',\n            this.noBackdrop ? 'modal--no-backdrop' : ''\n        ]\">\n      <div :class=\"[\n            'modal-dialog',\n            size ? `modal-${size}` : '',\n            centered ? `modal-dialog-centered` : '',\n        ]\"\n        role=\"document\"\n        v-on-clickaway=\"away\">\n        <div class=\"modal-content\">\n            <slot />\n        </div>\n      </div>\n    </component>\n  </transition>\n</template>\n\n<script>\nimport { mixin as clickAwayMixin } from 'vue-clickaway';\nimport { MODAL_EVENTS } from '../../utils/constants';\n\nexport default {\n    name: 'd-modal',\n    mixins: [clickAwayMixin],\n    props: {\n        /**\n         * The component tag.\n         */\n        tag: {\n            type: String,\n            default: \"div\"\n        },\n        /**\n         * The size (sm, lg).\n         */\n        size: {\n            type: String,\n            default: null,\n            validator: v => ['sm', 'lg'].includes(v)\n        },\n        /**\n         * Hides the backdrop overlay.\n         */\n        noBackdrop: {\n            type: Boolean,\n            default: false\n        },\n        /**\n         * Whether it is centered, or not.\n         */\n        centered: {\n            type: Boolean,\n            default: false\n        }\n    },\n  methods: {\n    away() {\n        if (this.noBackdrop) {\n            return;\n        }\n\n        /**\n         * Do not close modals when SWAL alert is opened over\n         */\n        if (document.querySelector('.swal2-container')) {\n            return;\n        }\n\n        /**\n         * Do not close modals when <body> contains `js-not-close-modals-on-backdrop-click` CSS class\n         */\n        if (document.body.classList.contains('js-not-close-modals-on-backdrop-click')) {\n            return;\n        }\n\n        /**\n         * @event close\n         *\n         * Triggered when the modal is closed.\n         */\n        this.$emit('close');\n\n        /**\n         * @event hidden\n         *\n         * Triggered when the modal is hidden.\n         */\n        this.$root.$emit(MODAL_EVENTS.HIDDEN)\n    }\n  },\n};\n</script>\n\n<style scoped>\n.modal {\n    display: block;\n    background-color: rgba(0,0,0,0.5);\n    transition: .3s;\n    overflow-y: auto;\n}\n\n.modal-dialog {\n    transition: .3s;\n}\n\n.modal--no-backdrop {\n    background: none;\n    pointer-events: none;\n}\n\n.fade-enter {\n    transform: translate(0,0);\n    opacity: 1;\n}\n\n.fade-leave-active {\n    transform: translate(0,0);\n    opacity: 1;\n}\n\n.fade-enter, .fade-leave-active {\n    opacity: 0;\n}\n\n.fade-enter .modal-dialog,\n.fade-leave-active .modal-dialog {\n    -webkit-transform: translate(0,-25%);\n    transform: translate(0,-25%);\n}\n</style>\n"]}, media: undefined });
 
       };
       /* scoped */
-      var __vue_scope_id__$H = "data-v-30bb0787";
+      var __vue_scope_id__$H = "data-v-32a452ad";
       /* module identifier */
       var __vue_module_identifier__$H = undefined;
       /* functional template */
       var __vue_is_functional_template__$H = false;
+      /* component normalizer */
+      function __vue_normalize__$H(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/modal/Modal.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        {
+          var hook;
+          if (style) {
+            hook = function(context) {
+              style.call(this, createInjector(context));
+            };
+          }
+
+          if (hook !== undefined) {
+            if (component.functional) {
+              // register for functional component in vue file
+              var originalRender = component.render;
+              component.render = function renderWithStyleInjection(h, context) {
+                hook.call(context);
+                return originalRender(h, context)
+              };
+            } else {
+              // inject component registration as beforeCreate hook
+              var existing = component.beforeCreate;
+              component.beforeCreate = existing ? [].concat(existing, hook) : [hook];
+            }
+          }
+        }
+
+        return component
+      }
+      /* style inject */
+      function __vue_create_injector__$7() {
+        var head = document.head || document.getElementsByTagName('head')[0];
+        var styles = __vue_create_injector__$7.styles || (__vue_create_injector__$7.styles = {});
+        var isOldIE =
+          typeof navigator !== 'undefined' &&
+          /msie [6-9]\\b/.test(navigator.userAgent.toLowerCase());
+
+        return function addStyle(id, css) {
+          if (document.querySelector('style[data-vue-ssr-id~="' + id + '"]')) { return } // SSR styles are present.
+
+          var group = isOldIE ? css.media || 'default' : id;
+          var style = styles[group] || (styles[group] = { ids: [], parts: [], element: undefined });
+
+          if (!style.ids.includes(id)) {
+            var code = css.source;
+            var index = style.ids.length;
+
+            style.ids.push(id);
+
+            if (isOldIE) {
+              style.element = style.element || document.querySelector('style[data-group=' + group + ']');
+            }
+
+            if (!style.element) {
+              var el = style.element = document.createElement('style');
+              el.type = 'text/css';
+
+              if (css.media) { el.setAttribute('media', css.media); }
+              if (isOldIE) {
+                el.setAttribute('data-group', group);
+                el.setAttribute('data-next-index', '0');
+              }
+
+              head.appendChild(el);
+            }
+
+            if (isOldIE) {
+              index = parseInt(style.element.getAttribute('data-next-index'));
+              style.element.setAttribute('data-next-index', index + 1);
+            }
+
+            if (style.element.styleSheet) {
+              style.parts.push(code);
+              style.element.styleSheet.cssText = style.parts
+                .filter(Boolean)
+                .join('\n');
+            } else {
+              var textNode = document.createTextNode(code);
+              var nodes = style.element.childNodes;
+              if (nodes[index]) { style.element.removeChild(nodes[index]); }
+              if (nodes.length) { style.element.insertBefore(textNode, nodes[index]); }
+              else { style.element.appendChild(textNode); }
+            }
+          }
+        }
+      }
       /* style inject SSR */
       
 
       
-      var dModal = normalizeComponent_1(
+      var dModal = __vue_normalize__$H(
         { render: __vue_render__$H, staticRenderFns: __vue_staticRenderFns__$H },
         __vue_inject_styles__$H,
         __vue_script__$H,
         __vue_scope_id__$H,
         __vue_is_functional_template__$H,
         __vue_module_identifier__$H,
-        browser,
+        __vue_create_injector__$7,
         undefined
       );
 
@@ -9910,8 +11358,8 @@
     };
 
     /* script */
-    var __vue_script__$I = script$I;
-
+                var __vue_script__$I = script$I;
+                
     /* template */
     var __vue_render__$I = function() {
       var _vm = this;
@@ -9948,13 +11396,36 @@
       var __vue_module_identifier__$I = undefined;
       /* functional template */
       var __vue_is_functional_template__$I = false;
+      /* component normalizer */
+      function __vue_normalize__$I(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/modal/ModalHeader.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dModalHeader = normalizeComponent_1(
+      var dModalHeader = __vue_normalize__$I(
         { render: __vue_render__$I, staticRenderFns: __vue_staticRenderFns__$I },
         __vue_inject_styles__$I,
         __vue_script__$I,
@@ -9986,8 +11457,8 @@
     };
 
     /* script */
-    var __vue_script__$J = script$J;
-
+                var __vue_script__$J = script$J;
+                
     /* template */
     var __vue_render__$J = function() {
       var _vm = this;
@@ -10011,13 +11482,36 @@
       var __vue_module_identifier__$J = undefined;
       /* functional template */
       var __vue_is_functional_template__$J = false;
+      /* component normalizer */
+      function __vue_normalize__$J(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/modal/ModalTitle.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dModalTitle = normalizeComponent_1(
+      var dModalTitle = __vue_normalize__$J(
         { render: __vue_render__$J, staticRenderFns: __vue_staticRenderFns__$J },
         __vue_inject_styles__$J,
         __vue_script__$J,
@@ -10049,8 +11543,8 @@
     };
 
     /* script */
-    var __vue_script__$K = script$K;
-
+                var __vue_script__$K = script$K;
+                
     /* template */
     var __vue_render__$K = function() {
       var _vm = this;
@@ -10074,13 +11568,36 @@
       var __vue_module_identifier__$K = undefined;
       /* functional template */
       var __vue_is_functional_template__$K = false;
+      /* component normalizer */
+      function __vue_normalize__$K(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/modal/ModalBody.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dModalBody = normalizeComponent_1(
+      var dModalBody = __vue_normalize__$K(
         { render: __vue_render__$K, staticRenderFns: __vue_staticRenderFns__$K },
         __vue_inject_styles__$K,
         __vue_script__$K,
@@ -10112,8 +11629,8 @@
     };
 
     /* script */
-    var __vue_script__$L = script$L;
-
+                var __vue_script__$L = script$L;
+                
     /* template */
     var __vue_render__$L = function() {
       var _vm = this;
@@ -10137,13 +11654,36 @@
       var __vue_module_identifier__$L = undefined;
       /* functional template */
       var __vue_is_functional_template__$L = false;
+      /* component normalizer */
+      function __vue_normalize__$L(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/modal/ModalFooter.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dModalFooter = normalizeComponent_1(
+      var dModalFooter = __vue_normalize__$L(
         { render: __vue_render__$L, staticRenderFns: __vue_staticRenderFns__$L },
         __vue_inject_styles__$L,
         __vue_script__$L,
@@ -10233,8 +11773,8 @@
     };
 
     /* script */
-    var __vue_script__$M = script$M;
-
+                var __vue_script__$M = script$M;
+                
     /* template */
     var __vue_render__$M = function() {
       var _vm = this;
@@ -10268,13 +11808,36 @@
       var __vue_module_identifier__$M = undefined;
       /* functional template */
       var __vue_is_functional_template__$M = false;
+      /* component normalizer */
+      function __vue_normalize__$M(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/nav/Nav.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dNav = normalizeComponent_1(
+      var dNav = __vue_normalize__$M(
         { render: __vue_render__$M, staticRenderFns: __vue_staticRenderFns__$M },
         __vue_inject_styles__$M,
         __vue_script__$M,
@@ -10299,8 +11862,8 @@
     };
 
     /* script */
-    var __vue_script__$N = script$N;
-
+                var __vue_script__$N = script$N;
+                
     /* template */
     var __vue_render__$N = function() {
       var _vm = this;
@@ -10331,13 +11894,36 @@
       var __vue_module_identifier__$N = undefined;
       /* functional template */
       var __vue_is_functional_template__$N = false;
+      /* component normalizer */
+      function __vue_normalize__$N(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/nav/NavItem.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dNavItem = normalizeComponent_1(
+      var dNavItem = __vue_normalize__$N(
         { render: __vue_render__$N, staticRenderFns: __vue_staticRenderFns__$N },
         __vue_inject_styles__$N,
         __vue_script__$N,
@@ -10411,8 +11997,8 @@
     };
 
     /* script */
-    var __vue_script__$O = script$O;
-
+                var __vue_script__$O = script$O;
+                
     /* template */
     var __vue_render__$O = function() {
       var _vm = this;
@@ -10449,13 +12035,36 @@
       var __vue_module_identifier__$O = undefined;
       /* functional template */
       var __vue_is_functional_template__$O = false;
+      /* component normalizer */
+      function __vue_normalize__$O(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/navbar/Navbar.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dNavbar = normalizeComponent_1(
+      var dNavbar = __vue_normalize__$O(
         { render: __vue_render__$O, staticRenderFns: __vue_staticRenderFns__$O },
         __vue_inject_styles__$O,
         __vue_script__$O,
@@ -10493,8 +12102,8 @@
     };
 
     /* script */
-    var __vue_script__$P = script$P;
-
+                var __vue_script__$P = script$P;
+                
     /* template */
     var __vue_render__$P = function() {
       var _vm = this;
@@ -10518,13 +12127,36 @@
       var __vue_module_identifier__$P = undefined;
       /* functional template */
       var __vue_is_functional_template__$P = false;
+      /* component normalizer */
+      function __vue_normalize__$P(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/navbar/NavbarBrand.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dNavbarBrand = normalizeComponent_1(
+      var dNavbarBrand = __vue_normalize__$P(
         { render: __vue_render__$P, staticRenderFns: __vue_staticRenderFns__$P },
         __vue_inject_styles__$P,
         __vue_script__$P,
@@ -10574,8 +12206,8 @@
     };
 
     /* script */
-    var __vue_script__$Q = script$Q;
-
+                var __vue_script__$Q = script$Q;
+                
     /* template */
     var __vue_render__$Q = function() {
       var _vm = this;
@@ -10606,13 +12238,36 @@
       var __vue_module_identifier__$Q = undefined;
       /* functional template */
       var __vue_is_functional_template__$Q = false;
+      /* component normalizer */
+      function __vue_normalize__$Q(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/navbar/NavbarNav.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dNavbarNav = normalizeComponent_1(
+      var dNavbarNav = __vue_normalize__$Q(
         { render: __vue_render__$Q, staticRenderFns: __vue_staticRenderFns__$Q },
         __vue_inject_styles__$Q,
         __vue_script__$Q,
@@ -10665,8 +12320,8 @@
     };
 
     /* script */
-    var __vue_script__$R = script$R;
-
+                var __vue_script__$R = script$R;
+                
     /* template */
     var __vue_render__$R = function() {
       var _vm = this;
@@ -10698,13 +12353,36 @@
       var __vue_module_identifier__$R = undefined;
       /* functional template */
       var __vue_is_functional_template__$R = false;
+      /* component normalizer */
+      function __vue_normalize__$R(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/navbar/NavbarToggle.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dNavbarToggle = normalizeComponent_1(
+      var dNavbarToggle = __vue_normalize__$R(
         { render: __vue_render__$R, staticRenderFns: __vue_staticRenderFns__$R },
         __vue_inject_styles__$R,
         __vue_script__$R,
@@ -12039,8 +13717,8 @@
     };
 
     /* script */
-    var __vue_script__$S = script$S;
-
+                var __vue_script__$S = script$S;
+                
     /* template */
     var __vue_render__$S = function() {
       var _vm = this;
@@ -12071,13 +13749,36 @@
       var __vue_module_identifier__$S = undefined;
       /* functional template */
       var __vue_is_functional_template__$S = false;
+      /* component normalizer */
+      function __vue_normalize__$S(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/popover/Popover.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dPopover = normalizeComponent_1(
+      var dPopover = __vue_normalize__$S(
         { render: __vue_render__$S, staticRenderFns: __vue_staticRenderFns__$S },
         __vue_inject_styles__$S,
         __vue_script__$S,
@@ -12187,8 +13888,8 @@
     };
 
     /* script */
-    var __vue_script__$T = script$T;
-
+                var __vue_script__$T = script$T;
+                
     /* template */
     var __vue_render__$T = function() {
       var _vm = this;
@@ -12223,18 +13924,122 @@
       var __vue_module_identifier__$T = undefined;
       /* functional template */
       var __vue_is_functional_template__$T = false;
+      /* component normalizer */
+      function __vue_normalize__$T(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/progress/Progress.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        {
+          var hook;
+          if (style) {
+            hook = function(context) {
+              style.call(this, createInjector(context));
+            };
+          }
+
+          if (hook !== undefined) {
+            if (component.functional) {
+              // register for functional component in vue file
+              var originalRender = component.render;
+              component.render = function renderWithStyleInjection(h, context) {
+                hook.call(context);
+                return originalRender(h, context)
+              };
+            } else {
+              // inject component registration as beforeCreate hook
+              var existing = component.beforeCreate;
+              component.beforeCreate = existing ? [].concat(existing, hook) : [hook];
+            }
+          }
+        }
+
+        return component
+      }
+      /* style inject */
+      function __vue_create_injector__$8() {
+        var head = document.head || document.getElementsByTagName('head')[0];
+        var styles = __vue_create_injector__$8.styles || (__vue_create_injector__$8.styles = {});
+        var isOldIE =
+          typeof navigator !== 'undefined' &&
+          /msie [6-9]\\b/.test(navigator.userAgent.toLowerCase());
+
+        return function addStyle(id, css) {
+          if (document.querySelector('style[data-vue-ssr-id~="' + id + '"]')) { return } // SSR styles are present.
+
+          var group = isOldIE ? css.media || 'default' : id;
+          var style = styles[group] || (styles[group] = { ids: [], parts: [], element: undefined });
+
+          if (!style.ids.includes(id)) {
+            var code = css.source;
+            var index = style.ids.length;
+
+            style.ids.push(id);
+
+            if (isOldIE) {
+              style.element = style.element || document.querySelector('style[data-group=' + group + ']');
+            }
+
+            if (!style.element) {
+              var el = style.element = document.createElement('style');
+              el.type = 'text/css';
+
+              if (css.media) { el.setAttribute('media', css.media); }
+              if (isOldIE) {
+                el.setAttribute('data-group', group);
+                el.setAttribute('data-next-index', '0');
+              }
+
+              head.appendChild(el);
+            }
+
+            if (isOldIE) {
+              index = parseInt(style.element.getAttribute('data-next-index'));
+              style.element.setAttribute('data-next-index', index + 1);
+            }
+
+            if (style.element.styleSheet) {
+              style.parts.push(code);
+              style.element.styleSheet.cssText = style.parts
+                .filter(Boolean)
+                .join('\n');
+            } else {
+              var textNode = document.createTextNode(code);
+              var nodes = style.element.childNodes;
+              if (nodes[index]) { style.element.removeChild(nodes[index]); }
+              if (nodes.length) { style.element.insertBefore(textNode, nodes[index]); }
+              else { style.element.appendChild(textNode); }
+            }
+          }
+        }
+      }
       /* style inject SSR */
       
 
       
-      var dProgress = normalizeComponent_1(
+      var dProgress = __vue_normalize__$T(
         { render: __vue_render__$T, staticRenderFns: __vue_staticRenderFns__$T },
         __vue_inject_styles__$T,
         __vue_script__$T,
         __vue_scope_id__$T,
         __vue_is_functional_template__$T,
         __vue_module_identifier__$T,
-        browser,
+        __vue_create_injector__$8,
         undefined
       );
 
@@ -12356,8 +14161,8 @@
     };
 
     /* script */
-    var __vue_script__$U = script$U;
-
+                var __vue_script__$U = script$U;
+                
     /* template */
     var __vue_render__$U = function() {
       var _vm = this;
@@ -12421,18 +14226,122 @@
       var __vue_module_identifier__$U = undefined;
       /* functional template */
       var __vue_is_functional_template__$U = false;
+      /* component normalizer */
+      function __vue_normalize__$U(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/progress/ProgressBar.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        {
+          var hook;
+          if (style) {
+            hook = function(context) {
+              style.call(this, createInjector(context));
+            };
+          }
+
+          if (hook !== undefined) {
+            if (component.functional) {
+              // register for functional component in vue file
+              var originalRender = component.render;
+              component.render = function renderWithStyleInjection(h, context) {
+                hook.call(context);
+                return originalRender(h, context)
+              };
+            } else {
+              // inject component registration as beforeCreate hook
+              var existing = component.beforeCreate;
+              component.beforeCreate = existing ? [].concat(existing, hook) : [hook];
+            }
+          }
+        }
+
+        return component
+      }
+      /* style inject */
+      function __vue_create_injector__$9() {
+        var head = document.head || document.getElementsByTagName('head')[0];
+        var styles = __vue_create_injector__$9.styles || (__vue_create_injector__$9.styles = {});
+        var isOldIE =
+          typeof navigator !== 'undefined' &&
+          /msie [6-9]\\b/.test(navigator.userAgent.toLowerCase());
+
+        return function addStyle(id, css) {
+          if (document.querySelector('style[data-vue-ssr-id~="' + id + '"]')) { return } // SSR styles are present.
+
+          var group = isOldIE ? css.media || 'default' : id;
+          var style = styles[group] || (styles[group] = { ids: [], parts: [], element: undefined });
+
+          if (!style.ids.includes(id)) {
+            var code = css.source;
+            var index = style.ids.length;
+
+            style.ids.push(id);
+
+            if (isOldIE) {
+              style.element = style.element || document.querySelector('style[data-group=' + group + ']');
+            }
+
+            if (!style.element) {
+              var el = style.element = document.createElement('style');
+              el.type = 'text/css';
+
+              if (css.media) { el.setAttribute('media', css.media); }
+              if (isOldIE) {
+                el.setAttribute('data-group', group);
+                el.setAttribute('data-next-index', '0');
+              }
+
+              head.appendChild(el);
+            }
+
+            if (isOldIE) {
+              index = parseInt(style.element.getAttribute('data-next-index'));
+              style.element.setAttribute('data-next-index', index + 1);
+            }
+
+            if (style.element.styleSheet) {
+              style.parts.push(code);
+              style.element.styleSheet.cssText = style.parts
+                .filter(Boolean)
+                .join('\n');
+            } else {
+              var textNode = document.createTextNode(code);
+              var nodes = style.element.childNodes;
+              if (nodes[index]) { style.element.removeChild(nodes[index]); }
+              if (nodes.length) { style.element.insertBefore(textNode, nodes[index]); }
+              else { style.element.appendChild(textNode); }
+            }
+          }
+        }
+      }
       /* style inject SSR */
       
 
       
-      var dProgressBar = normalizeComponent_1(
+      var dProgressBar = __vue_normalize__$U(
         { render: __vue_render__$U, staticRenderFns: __vue_staticRenderFns__$U },
         __vue_inject_styles__$U,
         __vue_script__$U,
         __vue_scope_id__$U,
         __vue_is_functional_template__$U,
         __vue_module_identifier__$U,
-        browser,
+        __vue_create_injector__$9,
         undefined
       );
 
@@ -12547,8 +14456,8 @@
     };
 
     /* script */
-    var __vue_script__$V = script$V;
-
+                var __vue_script__$V = script$V;
+                
     /* template */
     var __vue_render__$V = function() {
       var _vm = this;
@@ -12571,13 +14480,36 @@
       var __vue_module_identifier__$V = undefined;
       /* functional template */
       var __vue_is_functional_template__$V = false;
+      /* component normalizer */
+      function __vue_normalize__$V(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/slider/Slider.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dSlider = normalizeComponent_1(
+      var dSlider = __vue_normalize__$V(
         { render: __vue_render__$V, staticRenderFns: __vue_staticRenderFns__$V },
         __vue_inject_styles__$V,
         __vue_script__$V,
@@ -12693,8 +14625,8 @@
     };
 
     /* script */
-    var __vue_script__$W = script$W;
-
+                var __vue_script__$W = script$W;
+                
     /* template */
     var __vue_render__$W = function() {
       var _vm = this;
@@ -12742,18 +14674,122 @@
       var __vue_module_identifier__$W = undefined;
       /* functional template */
       var __vue_is_functional_template__$W = false;
+      /* component normalizer */
+      function __vue_normalize__$W(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/tabs/_TabButton.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        {
+          var hook;
+          if (style) {
+            hook = function(context) {
+              style.call(this, createInjector(context));
+            };
+          }
+
+          if (hook !== undefined) {
+            if (component.functional) {
+              // register for functional component in vue file
+              var originalRender = component.render;
+              component.render = function renderWithStyleInjection(h, context) {
+                hook.call(context);
+                return originalRender(h, context)
+              };
+            } else {
+              // inject component registration as beforeCreate hook
+              var existing = component.beforeCreate;
+              component.beforeCreate = existing ? [].concat(existing, hook) : [hook];
+            }
+          }
+        }
+
+        return component
+      }
+      /* style inject */
+      function __vue_create_injector__$a() {
+        var head = document.head || document.getElementsByTagName('head')[0];
+        var styles = __vue_create_injector__$a.styles || (__vue_create_injector__$a.styles = {});
+        var isOldIE =
+          typeof navigator !== 'undefined' &&
+          /msie [6-9]\\b/.test(navigator.userAgent.toLowerCase());
+
+        return function addStyle(id, css) {
+          if (document.querySelector('style[data-vue-ssr-id~="' + id + '"]')) { return } // SSR styles are present.
+
+          var group = isOldIE ? css.media || 'default' : id;
+          var style = styles[group] || (styles[group] = { ids: [], parts: [], element: undefined });
+
+          if (!style.ids.includes(id)) {
+            var code = css.source;
+            var index = style.ids.length;
+
+            style.ids.push(id);
+
+            if (isOldIE) {
+              style.element = style.element || document.querySelector('style[data-group=' + group + ']');
+            }
+
+            if (!style.element) {
+              var el = style.element = document.createElement('style');
+              el.type = 'text/css';
+
+              if (css.media) { el.setAttribute('media', css.media); }
+              if (isOldIE) {
+                el.setAttribute('data-group', group);
+                el.setAttribute('data-next-index', '0');
+              }
+
+              head.appendChild(el);
+            }
+
+            if (isOldIE) {
+              index = parseInt(style.element.getAttribute('data-next-index'));
+              style.element.setAttribute('data-next-index', index + 1);
+            }
+
+            if (style.element.styleSheet) {
+              style.parts.push(code);
+              style.element.styleSheet.cssText = style.parts
+                .filter(Boolean)
+                .join('\n');
+            } else {
+              var textNode = document.createTextNode(code);
+              var nodes = style.element.childNodes;
+              if (nodes[index]) { style.element.removeChild(nodes[index]); }
+              if (nodes.length) { style.element.insertBefore(textNode, nodes[index]); }
+              else { style.element.appendChild(textNode); }
+            }
+          }
+        }
+      }
       /* style inject SSR */
       
 
       
-      var dTabButton = normalizeComponent_1(
+      var dTabButton = __vue_normalize__$W(
         { render: __vue_render__$W, staticRenderFns: __vue_staticRenderFns__$W },
         __vue_inject_styles__$W,
         __vue_script__$W,
         __vue_scope_id__$W,
         __vue_is_functional_template__$W,
         __vue_module_identifier__$W,
-        browser,
+        __vue_create_injector__$a,
         undefined
       );
 
@@ -13005,8 +15041,8 @@
     };
 
     /* script */
-    var __vue_script__$X = script$X;
-
+                var __vue_script__$X = script$X;
+                
     /* template */
     var __vue_render__$X = function() {
       var _vm = this;
@@ -13050,7 +15086,7 @@
                     },
                     on: {
                       click: function($event) {
-                        return _vm.setTab(index)
+                        _vm.setTab(index);
                       }
                     }
                   })
@@ -13090,18 +15126,122 @@
       var __vue_module_identifier__$X = undefined;
       /* functional template */
       var __vue_is_functional_template__$X = false;
+      /* component normalizer */
+      function __vue_normalize__$X(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/tabs/Tabs.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        {
+          var hook;
+          if (style) {
+            hook = function(context) {
+              style.call(this, createInjector(context));
+            };
+          }
+
+          if (hook !== undefined) {
+            if (component.functional) {
+              // register for functional component in vue file
+              var originalRender = component.render;
+              component.render = function renderWithStyleInjection(h, context) {
+                hook.call(context);
+                return originalRender(h, context)
+              };
+            } else {
+              // inject component registration as beforeCreate hook
+              var existing = component.beforeCreate;
+              component.beforeCreate = existing ? [].concat(existing, hook) : [hook];
+            }
+          }
+        }
+
+        return component
+      }
+      /* style inject */
+      function __vue_create_injector__$b() {
+        var head = document.head || document.getElementsByTagName('head')[0];
+        var styles = __vue_create_injector__$b.styles || (__vue_create_injector__$b.styles = {});
+        var isOldIE =
+          typeof navigator !== 'undefined' &&
+          /msie [6-9]\\b/.test(navigator.userAgent.toLowerCase());
+
+        return function addStyle(id, css) {
+          if (document.querySelector('style[data-vue-ssr-id~="' + id + '"]')) { return } // SSR styles are present.
+
+          var group = isOldIE ? css.media || 'default' : id;
+          var style = styles[group] || (styles[group] = { ids: [], parts: [], element: undefined });
+
+          if (!style.ids.includes(id)) {
+            var code = css.source;
+            var index = style.ids.length;
+
+            style.ids.push(id);
+
+            if (isOldIE) {
+              style.element = style.element || document.querySelector('style[data-group=' + group + ']');
+            }
+
+            if (!style.element) {
+              var el = style.element = document.createElement('style');
+              el.type = 'text/css';
+
+              if (css.media) { el.setAttribute('media', css.media); }
+              if (isOldIE) {
+                el.setAttribute('data-group', group);
+                el.setAttribute('data-next-index', '0');
+              }
+
+              head.appendChild(el);
+            }
+
+            if (isOldIE) {
+              index = parseInt(style.element.getAttribute('data-next-index'));
+              style.element.setAttribute('data-next-index', index + 1);
+            }
+
+            if (style.element.styleSheet) {
+              style.parts.push(code);
+              style.element.styleSheet.cssText = style.parts
+                .filter(Boolean)
+                .join('\n');
+            } else {
+              var textNode = document.createTextNode(code);
+              var nodes = style.element.childNodes;
+              if (nodes[index]) { style.element.removeChild(nodes[index]); }
+              if (nodes.length) { style.element.insertBefore(textNode, nodes[index]); }
+              else { style.element.appendChild(textNode); }
+            }
+          }
+        }
+      }
       /* style inject SSR */
       
 
       
-      var dTabs = normalizeComponent_1(
+      var dTabs = __vue_normalize__$X(
         { render: __vue_render__$X, staticRenderFns: __vue_staticRenderFns__$X },
         __vue_inject_styles__$X,
         __vue_script__$X,
         __vue_scope_id__$X,
         __vue_is_functional_template__$X,
         __vue_module_identifier__$X,
-        browser,
+        __vue_create_injector__$b,
         undefined
       );
 
@@ -13197,8 +15337,8 @@
     };
 
     /* script */
-    var __vue_script__$Y = script$Y;
-
+                var __vue_script__$Y = script$Y;
+                
     /* template */
     var __vue_render__$Y = function() {
       var _vm = this;
@@ -13265,18 +15405,122 @@
       var __vue_module_identifier__$Y = undefined;
       /* functional template */
       var __vue_is_functional_template__$Y = false;
+      /* component normalizer */
+      function __vue_normalize__$Y(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/tabs/Tab.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        {
+          var hook;
+          if (style) {
+            hook = function(context) {
+              style.call(this, createInjector(context));
+            };
+          }
+
+          if (hook !== undefined) {
+            if (component.functional) {
+              // register for functional component in vue file
+              var originalRender = component.render;
+              component.render = function renderWithStyleInjection(h, context) {
+                hook.call(context);
+                return originalRender(h, context)
+              };
+            } else {
+              // inject component registration as beforeCreate hook
+              var existing = component.beforeCreate;
+              component.beforeCreate = existing ? [].concat(existing, hook) : [hook];
+            }
+          }
+        }
+
+        return component
+      }
+      /* style inject */
+      function __vue_create_injector__$c() {
+        var head = document.head || document.getElementsByTagName('head')[0];
+        var styles = __vue_create_injector__$c.styles || (__vue_create_injector__$c.styles = {});
+        var isOldIE =
+          typeof navigator !== 'undefined' &&
+          /msie [6-9]\\b/.test(navigator.userAgent.toLowerCase());
+
+        return function addStyle(id, css) {
+          if (document.querySelector('style[data-vue-ssr-id~="' + id + '"]')) { return } // SSR styles are present.
+
+          var group = isOldIE ? css.media || 'default' : id;
+          var style = styles[group] || (styles[group] = { ids: [], parts: [], element: undefined });
+
+          if (!style.ids.includes(id)) {
+            var code = css.source;
+            var index = style.ids.length;
+
+            style.ids.push(id);
+
+            if (isOldIE) {
+              style.element = style.element || document.querySelector('style[data-group=' + group + ']');
+            }
+
+            if (!style.element) {
+              var el = style.element = document.createElement('style');
+              el.type = 'text/css';
+
+              if (css.media) { el.setAttribute('media', css.media); }
+              if (isOldIE) {
+                el.setAttribute('data-group', group);
+                el.setAttribute('data-next-index', '0');
+              }
+
+              head.appendChild(el);
+            }
+
+            if (isOldIE) {
+              index = parseInt(style.element.getAttribute('data-next-index'));
+              style.element.setAttribute('data-next-index', index + 1);
+            }
+
+            if (style.element.styleSheet) {
+              style.parts.push(code);
+              style.element.styleSheet.cssText = style.parts
+                .filter(Boolean)
+                .join('\n');
+            } else {
+              var textNode = document.createTextNode(code);
+              var nodes = style.element.childNodes;
+              if (nodes[index]) { style.element.removeChild(nodes[index]); }
+              if (nodes.length) { style.element.insertBefore(textNode, nodes[index]); }
+              else { style.element.appendChild(textNode); }
+            }
+          }
+        }
+      }
       /* style inject SSR */
       
 
       
-      var dTab = normalizeComponent_1(
+      var dTab = __vue_normalize__$Y(
         { render: __vue_render__$Y, staticRenderFns: __vue_staticRenderFns__$Y },
         __vue_inject_styles__$Y,
         __vue_script__$Y,
         __vue_scope_id__$Y,
         __vue_is_functional_template__$Y,
         __vue_module_identifier__$Y,
-        browser,
+        __vue_create_injector__$c,
         undefined
       );
 
@@ -13467,8 +15711,8 @@
     };
 
     /* script */
-    var __vue_script__$Z = script$Z;
-
+                var __vue_script__$Z = script$Z;
+                
     /* template */
     var __vue_render__$Z = function() {
       var _vm = this;
@@ -13495,13 +15739,36 @@
       var __vue_module_identifier__$Z = undefined;
       /* functional template */
       var __vue_is_functional_template__$Z = false;
+      /* component normalizer */
+      function __vue_normalize__$Z(
+        template, style, script,
+        scope, functional, moduleIdentifier,
+        createInjector, createInjectorSSR
+      ) {
+        var component = (typeof script === 'function' ? script.options : script) || {};
+
+        // For security concerns, we use only base name in production mode.
+        component.__file = "/Users/dziudek/Desktop/Github/shards-vue/src/components/tooltip/Tooltip.vue";
+
+        if (!component.render) {
+          component.render = template.render;
+          component.staticRenderFns = template.staticRenderFns;
+          component._compiled = true;
+
+          if (functional) { component.functional = true; }
+        }
+
+        component._scopeId = scope;
+
+        return component
+      }
       /* style inject */
       
       /* style inject SSR */
       
 
       
-      var dTooltip = normalizeComponent_1(
+      var dTooltip = __vue_normalize__$Z(
         { render: __vue_render__$Z, staticRenderFns: __vue_staticRenderFns__$Z },
         __vue_inject_styles__$Z,
         __vue_script__$Z,

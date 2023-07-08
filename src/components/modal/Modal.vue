@@ -72,6 +72,13 @@ export default {
         }
 
         /**
+         * Do not close modals when <body> contains `js-not-close-modals-on-backdrop-click` CSS class
+         */
+        if (document.body.classList.contains('js-not-close-modals-on-backdrop-click')) {
+            return;
+        }
+
+        /**
          * @event close
          *
          * Triggered when the modal is closed.
